@@ -1,1 +1,235 @@
+Instantiate entire CoreCaveGenObj Prefab
+	Manager script attached
+	All generators inside
+	Call each with StartGenerate() -> does asynchronous gen
+	
+	*/ future do this all w/out instantiating any GO 
+		Just apply data to grid and continue calculations for cavern, path, ravine, etc /*
+
+*/ Odin stuff for button and organization /*
+
+
+Serialized field for gen[]
+	1 array -> Six capGens
+	
+Serialized fields for gen[][]
+	6 _anchorArraysArray -> nested 5 anchor generators
+		 */ for now put each in array 5x -> later clone or duplicate a single ref -> 30 total /*
+	3 _branchArraysArray -> nestedArrays for the 3 axis branchGens
+		*/ same as above -> 15 total /*
+	
+Nullable<Int> or int? _genArrayCount = null;
+	
+Bool _generating = false;
+Bool _finishedCaps = false;
+Bool _finishedAnchors = false;
+Bool _finishedBranches = false;
+
+Start () {
+	*/ with button in inspector for now /*
+}
+
+Update() {
+	if (!_generating) HandleGens();
+}
+
+HandleGens() {
+	If (!_finishedCaps) HandleCaps();
+	Else if (!_finishedAnchors) 
+		If (_genArrayCount = null) _genArrayCount =  _anchorArraysArray.count;
+		HandleAnchors();
+	Else if (!_finishedBranches) 
+		HandleBranches();
+	Else StartNewCoroutine(HandleFullyFinished());
+}
+
+HandleCaps() {
+	*/ Run all 6 cap gens ->  /*
+	
+	_generatorArrayCoroutine = new Coroutine StartNewCoroutine(HandleGenArray( _capArray, true, true, null, null, null, null, true));
+}
+		
+HandleAnchors() {
+	*/ Run all anchor gens 5x each -> /*
+	
+	If (_genArrayCount > 0) { 
+		_genArrayCount - -;
+		_generating = true;
+		StartNew Coroutine(HandleGenArray( _anchorArraysArray[_genArrayCount] , true, null, null, null, null, false));
+	} else { 
+		_finishedAnchors = true;
+		_genArrayCount = null;
+	}
+}
+		
+HandleBranches()
+	*/ Run all branches 5x each -> /* 
+	
+	// set array count if first pass
+	// should be 3 rn
+	If (_genArrayCount = null ) _genArrayCount =  _branchArraysArray.count;
+	
+	If (_branchArraysArray > 0) {
+		_generating = true;
+		
+		// advance to next branch
+		_genArrayCount - -;
+		
+		Var _genArray = new Gen[] ( _branchArraysArray[_genArrayCount]);
+		
+		StartNew Coroutine( HandleGenArray( _branchArraysArray[_genArrayCount], true, _anchorArraysArray[ _genArrayCount * 2][_genArrayCount], false, _anchorArraysArray[ ( _genArrayCount * 2) +1 ][_genArrayCount], false, false ));
+		
+	} else { 
+		_finishedAnchors = true;
+		_genArrayCount = null;
+	}
+} 
+		
+IEnumerator HandleGenArray( Gen[] _genArray, bool _arrayActive, Gen[]? _anchorArray1, bool? _anchorArray1Active, Gen[]? _anchorArray2, bool? _anchorArray2Active, bool _enabledWhenDone ) 
+	
+	// Activate if active is false 
+	If ( !_genArrayActive )
+		for each generator in _genArray => 
+			IsActive() = true;
+	}
+	If ( _anchorArray1 != null && _anchorArray1Active )
+		// if caps present turn off so caps don’t interfere with branches
+		for each generator in _anchorArray1 => 
+			IsActive() = false;
+	}
+	If ( _anchorArray2 != null && _anchorArray2Active )
+		// if caps present turn off so caps don’t interfere with branches
+		for each generator in _anchorArray2 => 
+			IsActive() = false;
+	}
+	
+	// handle cap & anchor gens
+	If (_anchorGenArray1 = null) { 
+		// if no caps, just generate all
+		For each ( Generator generator in _genArray =>
+			Coroutine _coroutine;
+			Yield return StartNewCoroutine(generator.StartGenerate());
+	} else {
+	// handle branch generation 
+		For each ( Generator generator in _genArray =>
+			Int i = _genArray.index
+			
+			// turn on just two opposing caps
+			_anchorArray1[i].gameObject.IsActive() = true;
+			_anchorArray2[i].gameObject.IsActive() = true;
+			
+			// start and wait for Coroutine
+			Coroutine _coroutine;
+			Yield return StartNewCoroutine(generator.StartGenerate());
+			
+			// deactivate caps & generated branch
+			_anchorArray1[i].gameObject.IsActive() = false;
+			_anchorArray2[i].gameObject.IsActive() = false;
+			generator.gameObject.IsActive = false;
+		}
+	}
+	
+	// handle enabled when done
+	If (!_enabledWhenDone) {
+		 foreach generator in _genArray => 
+			IsActive() = false;
+		If (_anchorArray1 != null) {
+			foreach generator in _anchorArray1 => 
+				IsActive() = false;
+		}
+		If (_anchorArray2 != null) {
+			foreach generator in _anchorArray2 => 
+				IsActive() = false;
+		}
+	}
+	_generating = false;
+}
+
+IEnumerator HandleFullyFinished() {
+	Foreach generator in _capGenArray => {
+		Generator.Clear();
+		Generator.gameObject.Destroy();
+	}
+	Yield return null;
+	Foreach generator[] in _anchorArraysArray =>
+		Foreach generator in _anchorGenArray => {
+			Generator.gameObject.IsActive() = true;
+		}
+	}
+	Yield return null;
+	Foreach generator[] in _anchorArraysArray =>
+		Foreach generator in _anchorGenArray => {
+			Generator.gameObject.IsActive() = true;
+		}
+	}
+	Debug.Log(“All Done!”);
+} 
+
+
+List<completion> _coreChunkCompletions = new List<completion>; 
+List<Dic<int[3], CoreChunk > _dicList = new List<Dic<int[3], CoreChunk>;
+
+*/
+put in script above 
+
+onComplete(completion _c){
+	AddCompletions(_c);
+}
+OnFullyComplete(){
+	HandleFullyComplete();
+}
+/*
+
+AddCompletions(completion c) {
+	_coreChunkCompletions.Add(_c);
+}
+
+HandleFullyComplete(){
+	Foreach completion _c in _coreChunkCompletions (() =>
+		// convert completion data into final Dic format
+		// — int[3] = key , CoreChunk = value
+		// —— each CoreChunk.property needs to be individually assigned here
+		
+		Dic<int[3], CoreChunk> _tempDic = new Dic<int[3], CoreChunk>;
+	
+		For each key _key in Completion.TileDic {
+			*/ add all data from completion to a dictionary 
+				Then add to the list /*
+			If (TryGetValue[_key, out value]){
+				CoreChunk _coreChunk;
+				_coreChunk.value = value.value;
+				// etc
+				_tempDic.add[key, _coreChunk]
+			}
+		
+			_tempDic.Add( */int[3] from completion/*, _tempCoreChunk);
+			}
+		_dicList.add(_tempDic);
+		}
+	}
+}
+*/ now we have a list of Dic in the final format
+	Next up -> add all Dic from list to final Dic and combine the necessary int /*
+
+
+Dic<int[3], CoreChunk > _final = new Dic<int[3], CoreChunk>;
+
+Foreach Dic<int[3], CoreChunk> _dic in _dicList( () =>
+	Foreach var key in _dic (() =>
+		If (_dic.TryGetValue[key, out value1]) {
+			If (_final.TryGetValue[i, out value2]) {
+				// adding the two together and update final dictionary
+				_final[key] = value1 + value2 
+			} else { 
+				// if not in _final, add entry
+				_final.Add(key,value1); } 
+		}
+	}
+}
+
+*/ store _final Dic in script on CoreChunkObj /*
+
+*/ make a public class CoreChunkObject
+	- This obj will hold all the CoreChunks , SubChunks, etc
+	- Put the necessary information there /*
 
