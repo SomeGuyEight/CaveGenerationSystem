@@ -1,9 +1,0 @@
-
-public struct CoreChunk {
-  int[3] CellIndex;
-  int[3] 
-}
-
-public struct SubChunk {
-
-}
