@@ -1,6 +1,7 @@
 # Eights_CaveGeneration
 
-ADD much?
+ADHD much?
 
-1. Get Sylves, Debroglie, & Tessera uploaded/linked
-2. Set file/folder structure
+1. Link Sylves, Debroglie, & Tessera
+2. Set up ReadMe with images/videos
+3. upload a clean project file eventually...
