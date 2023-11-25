@@ -82,6 +82,7 @@ namespace SlimeGame.PathWalk {
 
             /// Temp: Initialize a path for generation to start with
             InitializeMainPath((CellDir)CubeDir.Right);
+
         }
         private void Update() {
             HandleWalkingThisFrame();
@@ -90,7 +91,6 @@ namespace SlimeGame.PathWalk {
 
         #region Set Up
         private void PathVisualsSetUp() {
-            // Main Path visuals
             if (_mainPathVisual.GetComponent<MeshFilter>() != null) {
                 _mainPathMeshFilter = _mainPathVisual.GetComponent<MeshFilter>();
             } else {
@@ -101,7 +101,6 @@ namespace SlimeGame.PathWalk {
             } else {
                 Debug.Log($"Main Path Object did not have a Mesh Renderer => _pathMeshRenderer not set");
             }
-            // Split Path visuals
             if (_splitPathVisual.GetComponent<MeshFilter>() != null) {
                 _splitPathMeshFilter = _splitPathVisual.GetComponent<MeshFilter>();
             } else {
@@ -130,7 +129,7 @@ namespace SlimeGame.PathWalk {
             /// TODO: Adapt to use IPath methods
             /// 
 
-            /// TODO: find Y & Z start point & set as newCorePosition
+            /// TODO: find Y & Z start point & set for newCorePosition
             /// 
 
             /// Temp: core position set
@@ -156,29 +155,21 @@ namespace SlimeGame.PathWalk {
                 SplitPathTally = 0,
                 LastSplitChangeTally = 0,
             };
-            // instantiate Main Path Object
             newPath.ParentObject = _generationHolder.gameObject;
             newPath.GameObject = CreatePathObj(newPath);
-
-            // update manager Main Path List
             _paths.Add(newPath);
 
             /// TODO: Pick a random transverse starting location for the '0 Step' position
             /// 
 
-            // instantiate the '0 Step' Object & add to Main Path Dictionary
+            // need to create the '0 Step' Split Path Object for walk to start from
             newPath.PathPositionObjects[newCorePosition] = HandleObjectCreation((Cell) newCorePosition, newPath);
-
-            // add to Directional Main Path Dictionary
             newPath.DirectionalPathPositions[newPath.GetPathDirectionPosition()] = (Cell)newPath.WorldPosition;
             return newPath;
         }
         private (CellDir, SplitPath) InitializeSplitPath(MainPath mainPath, Cell cell) {
-
             mainPath.SplitPathTally++;
-
             var newSplitPath = new SplitPath {
-
                 Name = $"Split Path {mainPath.SplitPathTally} from '{mainPath.Name}'",
                 ParentObject = _generationHolder.gameObject,
                 ParentPath = mainPath,
@@ -190,12 +181,9 @@ namespace SlimeGame.PathWalk {
             };
             newSplitPath.UpdateWorldPosition((Vector3Int)cell);
             newSplitPath.GameObject = CreatePathObj(newSplitPath);
-            // update manager Main Path List
             mainPath.SplitPathsList.Add(newSplitPath);
-
-            // create the '0 Step' Split Path Object & add to main paths split dictionary
+            // need to create the '0 Step' Split Path Object for walk to start from
             mainPath.SplitObjectsDictionary[newSplitPath.WorldPosition] = HandleObjectCreation(cell, newSplitPath);
-
             return (mainPath.Direction, newSplitPath);
         }
         #endregion
@@ -232,17 +220,13 @@ namespace SlimeGame.PathWalk {
                     if (path.GetPathType() == PathType.Main) {
                         MainPath mainPath = (MainPath) path;
                         MainPathLoop(mainPath);
-                        // Walk loop => branch split
                         Queue<SplitPath> splitRemovalQueue = new Queue<SplitPath>();
                         foreach (SplitPath splitPath in mainPath.SplitPathsList) {
                             if (SplitPathLoop(splitPath)) {
                                 splitRemovalQueue.Enqueue(splitPath);
                             }
                         }
-                        // Remove all splits that merged from Queue
                         for (int processed = 0; processed < splitRemovalQueue.Count; processed++) {
-                            //var splitPathToRemoveAndDestroy = splitRemovalQueue.Dequeue();
-                            //mainPath.SplitPathsList.Remove(splitPathToRemoveAndDestroy);
                             mainPath.SplitPathsList.Remove(splitRemovalQueue.Dequeue());
                         }
                     } else if (path.GetPathType() == PathType.Split) {
@@ -262,19 +246,16 @@ namespace SlimeGame.PathWalk {
         /// <param name="mainPath"></param>
         private void MainPathLoop(MainPath mainPath) {
             int stepsThisWalk = _maxStepsPerUpdate;
-            // Walk loop main Main Path & Split Path initiation Logic
             for (int mainDirSteps = 0; mainDirSteps < stepsThisWalk; mainDirSteps++) {
-                // get direction to move
                 (CubeDir?, bool) nullableStepAndUpdatedTally = PickMoveDirection(mainPath);
                 if (nullableStepAndUpdatedTally.Item2 == true) {
                     mainPath.TransverseTally = 0;
                 }
+                Debug.Log($"Main Path TransverseTally == {mainPath.TransverseTally}");
                 if (nullableStepAndUpdatedTally.Item1 == null) {
                     Debug.Log($"Move direction is null while walking Main Path => continueing to next loop");
                     break;
                 }
-                Debug.Log($"Main Path TransverseTally == {mainPath.TransverseTally}");
-
                 CellDir step = (CellDir) nullableStepAndUpdatedTally.Item1;
                 if (step == mainPath.Direction) {
                     mainPath.TransverseTally = 0;
@@ -288,12 +269,9 @@ namespace SlimeGame.PathWalk {
                 _grid.TryMove((Cell) mainPath.WorldPosition, step, out Cell newCell, out CellDir currentMoveInverseDir, out Connection connection);
                 mainPath.Step++;
                 mainPath.UpdateWorldPosition((Vector3Int) newCell);
-
                 var newStepObject = HandleObjectCreation(newCell, mainPath);
                 mainPath.PathPositionObjects[(Vector3Int) newCell] = newStepObject;
-
                 int newDirectionalPosition = mainPath.GetPathDirectionPosition((Vector3Int) newCell);
-
                 if (step != mainPath.Direction) {
                     // not in the main dir => increment maindDirSteps down
                     // - Makes sure the moves in the main dir are only taken into account
@@ -301,7 +279,6 @@ namespace SlimeGame.PathWalk {
                 } else if (step == mainPath.Direction && !mainPath.DirectionalPathPositions.ContainsKey(newDirectionalPosition)) {
                     mainPath.DirectionalPathPositions[newDirectionalPosition] = newCell;
                 }
-
                 MainPathSplitCheck(mainPath);
             }
         }
@@ -309,11 +286,10 @@ namespace SlimeGame.PathWalk {
         /// Walks the split path until it merges with a main path or another split path
         /// </summary>
         /// <param name="splitPath"></param>
-        /// <returns>if returned true => Enqueue split path to terminate after all splits are done walking</returns>
+        /// <returns>if true > Enqueue split path to terminate after all splits are done walking</returns>
         private bool SplitPathLoop(SplitPath splitPath) {
             bool addToRemovalQueue = false;
-            // Get last main path position - 1
-            // > Split path will stop before current main path position
+            // Getting last main path position - 1 to prevent the main path from ever walking onto the split paths
             int branchStepsThisWalk = Mathf.Abs(splitPath.ParentPath.GetPathDirectionPosition() - splitPath.GetPathDirectionPosition(splitPath.WorldPosition)) - 1;
             for (int branchSplitSteps = 0; branchSplitSteps < branchStepsThisWalk; branchSplitSteps++) {
 
@@ -329,7 +305,6 @@ namespace SlimeGame.PathWalk {
                     Debug.Log($"Move direction is null while walking Split Path => continueing to next loop");
                     break;
                 }
-
                 CellDir step = (CellDir) nullableStepAndUpdatTallyBool.Item1;
                 if (step == splitPath.Direction) {
                     splitPath.TransverseTally = 0;
@@ -342,28 +317,23 @@ namespace SlimeGame.PathWalk {
                 }
                 _grid.TryMove((Cell) splitPath.WorldPosition, step, out Cell newCell, out CellDir currentMoveInverseDir, out Connection connection);
                 if (splitPath.ParentPath.PathPositionObjects.TryGetValue((Vector3Int) newCell, out GameObject mainPathGameObject)) {
-                    // moving into Main Path Cell
-                    // > enqueue Split Path for removal and end this loop
+                    // remove b/c moving into Main Path Cell
                     addToRemovalQueue = true;
-                    // end for loop for this split path
                     break;
                 } else if (splitPath.ParentPath.SplitObjectsDictionary.TryGetValue((Vector3Int) newCell, out GameObject contridictingSplitPath)) {
-                    // moving into other Split Path Cell
-                    // > enqueue Split Path for removal and end this loop
+                    // remove b/c moving into other Split Path Cell
                     addToRemovalQueue = true;
-                    // end for loop for this split path
                     break;
                 } else {
                     splitPath.Step++;
                     splitPath.UpdateWorldPosition((Vector3Int) newCell);
-
                     HandleObjectCreation(newCell, splitPath);
                     if (step != splitPath.Direction) {
-                        // not in the main dir => increment maindDirSteps down
-                        // - Makes sure the moves in the main dir are only taken into account
+                        // Increment back to make sure only moves in main dir are counted this walk
                         branchSplitSteps--;
                     }
-                    Debug.Log($"{splitPath.Name} Transverse Tally == {splitPath.TransverseTally}");
+                    Debug.Log($"Split Path Transverse Tally == {splitPath.TransverseTally}");
+                    //Debug.Log($"{splitPath.Name} Transverse Tally == {splitPath.TransverseTally}");
                 }
             }
             return addToRemovalQueue;
@@ -374,10 +344,9 @@ namespace SlimeGame.PathWalk {
                 int newSplitWeight = mainPath.SplitPathsList.Count * _newSplitWeightFactor;
                 int testInt = UnityEngine.Random.Range(0, _splitTestWeightTotal);
                 if (newSplitWeight < testInt) {
-                    // get last main path position - 1, so the main path does not walk on the split path
+                    // Getting last main path position - 1 to prevent the main path from ever walking onto the split paths
                     int previousMainPathIndex = mainPath.GetPathDirectionPosition(mainPath.WorldPosition) - 1;
                     if (mainPath.DirectionalPathPositions.TryGetValue(previousMainPathIndex, out Cell previousMainPathCell)) {
-                        // Pick random transverse direction to walk
                         CellDir[] transverseDir = mainPath.GetTransverseDirections();
                         int randomIndex = UnityEngine.Random.Range(0, transverseDir.Length);
                         CellDir splitDir = transverseDir[randomIndex];
@@ -390,20 +359,17 @@ namespace SlimeGame.PathWalk {
                             newSplit.PastMoveDirections.Insert(0, splitDir);
                         }
                     }
-                    // no valid cell was found, just move on for now and try next Main Path step
+                    // no valid cell was found, just move on and check for split on next Main Path step
                 }
             }
         }
         private Cell? FindEmptyCellForSplit(MainPath mainPath, CellDir dir, Cell cell) {
             Cell? nullableCell = null;
             Cell currentTryCell = cell;
-            // repeat steps until empty cell is found
             for (int splitTries = 0; splitTries < _maxSplitTries; splitTries++) {
                 _grid.TryMove(currentTryCell, dir, out Cell newCell, out CellDir currentMoveInverseDir, out Connection connection);
                 if (!mainPath.PathPositionObjects.ContainsKey((Vector3Int) newCell)) {
-                    // Found cell w/o Main Path => check split path cells
                     if (!mainPath.SplitObjectsDictionary.ContainsKey((Vector3Int) newCell)) {
-                        // Found empty cell => break & return cell
                         nullableCell = newCell;
                         break;
                     }
@@ -412,29 +378,20 @@ namespace SlimeGame.PathWalk {
             return nullableCell;
         }
         private (CubeDir?, bool) PickMoveDirection(MainPath mainPath) {
-
             bool resetTally = false;
             if (mainPath.TransverseTally >= _mainMaxTransverseMoveTally) {
                 resetTally = true;
                 return ((CubeDir)mainPath.Direction, resetTally);
             }
-            // Set weight for possible moves based on LocalPosition & Tally counts
             var directionWeights = new int[6];
             SetUpDirectionWeightsArray(ref directionWeights, mainPath, _mainTransverseWalkRange, _mainOtherDirWeightFactor, _mainMaxWeightPerDirection);
-            // Adjust weight weight values past move dir
             AdjustWeightValueBasedOnPastMoves(ref directionWeights, mainPath, _mainMaxPastMovesWeighted, _mainPastMoveWeightsByIndex, _mainPastMoveWeightFactor);
-
-            // Set main dir value based off of transverse movements
             directionWeights[(int) mainPath.Direction] = Mathf.Min(_mainPathDirectionWeight + (mainPath.TransverseTally * _mainTransverseTallyWeightFactor), _mainMaxWeightPerDirection);
-            // remove inverse main dir from pool
-            directionWeights[(int) GenerationUtils.InvertDirection(mainPath.Direction)] = 0;
-            // remove inverse direction of last move direction from pool
-            // > stops from walking back on self
+            directionWeights[(int)GenerationUtils.InvertDirection(mainPath.Direction)] = 0;
+            // removing inverse direction of last move stops path from walking back on self
             if (mainPath.PastMoveDirections.Count > 0) {
                 directionWeights[(int) GenerationUtils.InvertDirection(mainPath.PastMoveDirections[0])] = 0;
             }
-
-            // pick index from weighted array
             int? nullableInt = PickWeightedCountIndex(directionWeights);
             if (nullableInt == null) {
                 return (null, resetTally);
@@ -447,18 +404,12 @@ namespace SlimeGame.PathWalk {
                 resetTally = true;
                 return ((CubeDir) splitPath.Direction, resetTally);
             }
-
-            // Set weight for possible moves based on LocalPosition & Tally counts
             var directionWeights = new int[6];
             SetUpDirectionWeightsArray(ref directionWeights, splitPath, _splitTransverseWalkRange, _splitOtherDirWeightFactor, _splitMaxWeightPerDirection);
-            // Adjust weight weight values past move dir
             AdjustWeightValueBasedOnPastMoves(ref directionWeights, splitPath, _splitMaxPastMovesWeighted, _splitPastMoveWeightsByIndex, _splitPastMoveWeightFactor);
-            // Set main dir value based off of transverse movements
             directionWeights[(int) splitPath.Direction] = Mathf.Min(_splitPathDirectionWeight + (splitPath.TransverseTally * _splitTransverseTallyWeightFactor), _splitMaxWeightPerDirection);
-            // remove inverse main dir from pool
             directionWeights[(int) GenerationUtils.InvertDirection(splitPath.Direction)] = 0;
-            // remove inverse direction of last move direction from pool
-            // > stops from walking back on self
+            // removing inverse direction of last move stops path from walking back on self
             if (splitPath.PastMoveDirections.Count > 0) {
                 directionWeights[(int) GenerationUtils.InvertDirection(splitPath.PastMoveDirections[0])] = 0;
             }
@@ -470,12 +421,10 @@ namespace SlimeGame.PathWalk {
             // * should not need to worry axis of path, b/c relative axis position will always be 0
             Vector3Int positionRelativeToMainPath = splitPath.GetLocalPosition();
             bool returnThisDir = false;
-            var cellDir = HandlePathFunnel(positionRelativeToMainPath, _splitTransverseWalkRange, ref returnThisDir);
+            var directionInt = HandlePathFunnel(positionRelativeToMainPath, _splitTransverseWalkRange, ref returnThisDir);
             if (returnThisDir) {
-                return ((CubeDir) cellDir, resetTally);
+                return ((CubeDir) directionInt, resetTally);
             }
-
-            // pick index from weighted array
             int? nullableInt = PickWeightedCountIndex(directionWeights);
             if (nullableInt == null) {
                 return (null, resetTally);
@@ -484,7 +433,6 @@ namespace SlimeGame.PathWalk {
         }
         private void SetUpDirectionWeightsArray(ref int[] directionWeights, IPath path, Vector3Int transverseWalkRange, int otherDirWeightFactor, int maxWeightPerDirection) {
             var localPosition = path.GetLocalPosition();
-            // Set weight for possible moves based on LocalPosition & Tally counts
             directionWeights[(int)CubeDir.Right] = Mathf.Min((-localPosition.x + transverseWalkRange.x) * otherDirWeightFactor, maxWeightPerDirection);
             directionWeights[(int)CubeDir.Left] = Mathf.Min((localPosition.x + transverseWalkRange.x) * otherDirWeightFactor, maxWeightPerDirection);
             directionWeights[(int)CubeDir.Up] = Mathf.Min((-localPosition.y + transverseWalkRange.y) * otherDirWeightFactor, maxWeightPerDirection);
@@ -513,31 +461,31 @@ namespace SlimeGame.PathWalk {
                 }
             }
         }
-        private CellDir? HandlePathFunnel(Vector3Int relativePosition, Vector3Int maxRange, ref bool returnThisDir) {
+        private int? HandlePathFunnel(Vector3Int relativePosition, Vector3Int maxRange, ref bool returnThisDir) {
             if (relativePosition.x > maxRange.x) {
                 Debug.Log($"+X distance too far");
                 returnThisDir = true;
-                return (CellDir)CubeDir.Left;
+                return (int)CubeDir.Left;
             } else if (relativePosition.x < -maxRange.x) {
                 Debug.Log($"-X distance too far");
                 returnThisDir = true;
-                return (CellDir) CubeDir.Right;
+                return (int)CubeDir.Right;
             } else if (relativePosition.y > maxRange.y) {
                 Debug.Log($"+Y distance too far");
                 returnThisDir = true;
-                return (CellDir) CubeDir.Down;
+                return (int)CubeDir.Down;
             } else if (-relativePosition.y < -maxRange.y) {
                 Debug.Log($"-Y distance too far");
                 returnThisDir = true;
-                return (CellDir) CubeDir.Up;
+                return (int)CubeDir.Up;
             } else if (relativePosition.z > maxRange.z) {
                 Debug.Log($"+Z distance too far");
                 returnThisDir = true;
-                return (CellDir) CubeDir.Back;
+                return (int)CubeDir.Back;
             } else if (-relativePosition.z < -maxRange.z) {
                 Debug.Log($"-Z distance too far");
                 returnThisDir = true;
-                return (CellDir) CubeDir.Forward;
+                return (int)CubeDir.Forward;
             }
             return null;
         }
@@ -547,16 +495,12 @@ namespace SlimeGame.PathWalk {
         /// <param name="arrayOfWeights"></param>
         /// <returns>Returns a random index from the array weighted relative to the passed in int[] values per index</returns>
         private int? PickWeightedCountIndex(int[] arrayOfWeights) {
-            // Pick from weighted count
             int totalWeightedCount = 0;
-            // add up all values in directionWeights
             for (int index = 0; index < arrayOfWeights.Length; index++) {
                 totalWeightedCount = totalWeightedCount + arrayOfWeights[index];
             }
             int randomInt = UnityEngine.Random.Range(0, totalWeightedCount);
             int currentMaxExclusive = 0;
-
-            // cycle through array until corresponding index check is passed
             for (int index = 0; index < arrayOfWeights.Length; index++) {
                 currentMaxExclusive = currentMaxExclusive + arrayOfWeights[index];
                 if (randomInt < currentMaxExclusive) {
@@ -589,7 +533,6 @@ namespace SlimeGame.PathWalk {
             stepObj.transform.position = (Vector3Int)cell;
             stepObj.transform.rotation = Quaternion.identity;
             stepObj.transform.parent = path.GetGameObject().transform;
-
             var filter = stepObj.AddComponent<MeshFilter>();
             var renderer = stepObj.AddComponent<MeshRenderer>();
             if (type == PathType.Main) {
@@ -608,7 +551,6 @@ namespace SlimeGame.PathWalk {
             pathObj.transform.position = path.GetParentObject().transform.position;
             pathObj.transform.rotation = Quaternion.identity;
             pathObj.transform.parent = path.GetParentObject().transform;
-
             return pathObj;
         }
         #endregion
