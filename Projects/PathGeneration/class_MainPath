@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using Sylves;
 
-namespace Tessera.CaveGeneration {
-    internal class MainPath : IPath {
+namespace SlimeGame.PathWalk {
+    class MainPath :IPath {
         #region Variables
-        private PathType _type;
+        private PathType _pathType;
         private CellDir _direction;
         private string _name;
         private GameObject _gameObject;
@@ -17,7 +17,7 @@ namespace Tessera.CaveGeneration {
         private Dictionary<int, Cell> _directionalPathPositions;
         private Dictionary<Vector3Int, GameObject> _pathPositionObjects;
         private List<SplitPath> _splitPathsList;
-        private Dictionary<Vector3Int, GameObject> _splitObjectsDictionary;  
+        private Dictionary<Vector3Int, GameObject> _splitObjectsDictionary;
         private List<CellDir> _pastMoveDirections;
         private int _transverseTally;
         private int _step;
@@ -25,7 +25,7 @@ namespace Tessera.CaveGeneration {
         private int _lastSplitChangeTally;
 
         #region  Getters & Setters
-        internal PathType Type { get { return _type; } set { _type = value; } }
+        internal PathType PathType { get { return _pathType; } set { _pathType = value; } }
         internal CellDir Direction { get { return _direction; } set { _direction = value; } }
         internal string Name { get { return _name; } set { _name = value; } }
         internal GameObject GameObject { get { return _gameObject; } set { _gameObject = value; } }
@@ -44,27 +44,27 @@ namespace Tessera.CaveGeneration {
         internal int LastSplitChangeTally { get { return _lastSplitChangeTally; } set { _lastSplitChangeTally = value; } }
         #endregion
 
-        #region IPath Overides
-        internal override PathType GetPathType() { return Type; }
-        internal override CellDir GetDirection() { return Direction; }
-        internal override string GetName() { return Name; }
-        internal override GameObject GetGameObject() { return GameObject; }
-        internal override GameObject GetParentObject() { return ParentObject; }
-        internal override Vector3Int GetWorldPosition() { return WorldPosition; }
-        internal override Vector3Int GetLocalPosition() { return LocalPosition; }
-        internal override List<CellDir> GetPastMoveDirections() { return PastMoveDirections; }
-        internal override int GetTransverseTally() { return TransverseTally; }
-        internal override int GetStep() { return Step; }
-        internal override void SetPathType(PathType type) { Type = type; }
-        internal override void SetDirection(CellDir direction) { Direction = direction; }
-        internal override void SetName(string name) { Name = name; }
-        internal override void SetGameObject(GameObject gameObject) { GameObject = gameObject; }
-        internal override void SetParentObject(GameObject parentObject) { ParentObject = parentObject; }
-        internal override void SetWorldPosition(Vector3Int worldPosition) { WorldPosition = worldPosition; }
-        internal override void SetLocalPosition(Vector3Int localPosition) { LocalPosition = localPosition; }
-        internal override void SetPastMoveDirections(List<CellDir> pastMoveDirections) { PastMoveDirections = pastMoveDirections; }
-        internal override void SetTransverseTally(int transverseTally) { TransverseTally = transverseTally; }
-        internal override void SetStep(int step) { Step = step; }
+        #region IPath Methods
+        public PathType GetPathType() { return _pathType; }
+        public CellDir GetDirection() { return _direction; }
+        public string GetName() { return Name; }
+        public GameObject GetGameObject() { return GameObject; }
+        public GameObject GetParentObject() { return ParentObject; }
+        public Vector3Int GetWorldPosition() { return WorldPosition; }
+        public Vector3Int GetLocalPosition() { return LocalPosition; }
+        public List<CellDir> GetPastMoveDirections() { return PastMoveDirections; }
+        public int GetTransverseTally() { return TransverseTally; }
+        public int GetStep() { return Step; }
+        public void SetPathType(PathType pathType) { PathType = pathType; }
+        public void SetDirection(CellDir direction) { Direction = direction; }
+        public void SetName(string name) { Name = name; }
+        public void SetGameObject(GameObject gameObject) { GameObject = gameObject; }
+        public void SetParentObject(GameObject parentObject) { ParentObject = parentObject; }
+        public void SetWorldPosition(Vector3Int worldPosition) { WorldPosition = worldPosition; }
+        public void SetLocalPosition(Vector3Int localPosition) { LocalPosition = localPosition; }
+        public void SetPastMoveDirections(List<CellDir> pastMoveDirections) { PastMoveDirections = pastMoveDirections; }
+        public void SetTransverseTally(int transverseTally) { TransverseTally = transverseTally; }
+        public void SetStep(int step) { Step = step; }
         #endregion
         #endregion
 
