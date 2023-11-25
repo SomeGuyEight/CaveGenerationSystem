@@ -1,0 +1,100 @@
+using UnityEngine;
+using System;
+using System.Collections.Generic;
+using Sylves;
+
+namespace Tessera.CaveGeneration {
+    internal class SplitPath : IPath {
+        #region Variables
+        private PathType _type;
+        private CellDir _direction;
+        private string _name;
+        private GameObject _gameObject;
+        private GameObject _parentObject;
+        private MainPath _parentPath;
+        private Vector3Int _worldPosition;
+        private Vector3Int _localPosition;
+        private List<CellDir> _pastMoveDirections;
+        private int _transverseTally;
+        private int _step;
+
+        #region Getters & Setters
+        internal PathType Type { get { return _type; } set { _type = value; } }
+        internal CellDir Direction { get { return _direction; } set { _direction = value; } }
+        internal string Name { get { return _name; } set { _name = value; } }
+        internal GameObject GameObject { get { return _gameObject; } set { _gameObject = value; } }
+        internal GameObject ParentObject { get { return _parentObject; } set { _parentObject = value; } }
+        internal MainPath ParentPath { get { return _parentPath; } set { _parentPath = value; } }
+        internal Vector3Int WorldPosition { get { return _worldPosition; } set { _worldPosition = value; } }
+        /// <summary>
+        /// Relative to the Main Path Directional Position, not the Main Path CorePosition
+        /// </summary>
+        internal Vector3Int LocalPosition { get { return _localPosition; } set { _localPosition = value; } }
+        internal List<CellDir> PastMoveDirections { get { return _pastMoveDirections; } set { _pastMoveDirections = value; } }
+        internal int TransverseTally { get { return _transverseTally; } set { _transverseTally = value; } }
+        internal int Step { get { return _step; } set { _step = value; } }
+        #endregion
+
+        #region IPath Overides
+        internal override PathType GetPathType() { return Type; }
+        internal override CellDir GetDirection() { return Direction; }
+        internal override string GetName() { return Name; }
+        internal override GameObject GetGameObject() { return GameObject; }
+        internal override GameObject GetParentObject() { return ParentObject; }
+        internal override Vector3Int GetWorldPosition() { return WorldPosition; }
+        internal override Vector3Int GetLocalPosition() { return LocalPosition; }
+        internal override List<CellDir> GetPastMoveDirections() { return PastMoveDirections; }
+        internal override int GetTransverseTally() { return TransverseTally; }
+        internal override int GetStep() { return Step; }
+        internal override void SetPathType(PathType type) { Type = type; }
+        internal override void SetDirection(CellDir direction) { Direction = direction; }
+        internal override void SetName(string name) { Name = name; }
+        internal override void SetGameObject(GameObject gameObject) { GameObject = gameObject; }
+        internal override void SetParentObject(GameObject parentObject) { ParentObject = parentObject; }
+        internal override void SetWorldPosition(Vector3Int worldPosition) { WorldPosition = worldPosition; }
+        internal override void SetLocalPosition(Vector3Int localPosition) { LocalPosition = localPosition; }
+        internal override void SetPastMoveDirections(List<CellDir> pastMoveDirections) { PastMoveDirections = pastMoveDirections; }
+        internal override void SetTransverseTally(int transverseTally) { TransverseTally = transverseTally; }
+        internal override void SetStep(int step) { Step = step; }
+        #endregion
+        #endregion
+        internal void UpdateWorldPosition(Vector3Int newPosition) {
+            _worldPosition = newPosition;
+            _localPosition = GetRelativeLocalPosition(newPosition);
+        }
+        internal void UpdateLocalPosition(Vector3Int newPosition) {
+            _localPosition = GetRelativeLocalPosition(newPosition);
+            _worldPosition = newPosition + _parentPath.CorePosition;
+        }
+        internal Vector3Int GetRelativeLocalPosition(Vector3Int position) {
+
+            // find the SplitPath directional position
+            int splitDirectionalPosition = GetPathDirectionPosition(position);
+
+            // find ParentPath position at the splits directional position 
+            Vector3Int mainPathDirectionalCellPosition = (Vector3Int)_parentPath.DirectionalPathPositions[splitDirectionalPosition];
+
+            // find & return transverse distance for the split path from the ParentPath DirectionalPosition
+            Vector3Int splitRelativeLocalPosition = position - mainPathDirectionalCellPosition;
+            return splitRelativeLocalPosition;
+        }
+        internal int GetPathDirectionPosition() {
+            switch ((CubeDir)_direction) {
+                case CubeDir.Right or CubeDir.Left: return _worldPosition.x;
+                case CubeDir.Up or CubeDir.Down: return _worldPosition.y;
+                case CubeDir.Forward or CubeDir.Back: return _worldPosition.z;
+            }
+            Debug.Log($"Failed to get SplitPath position from direction {(CubeDir)_direction}");
+            throw new Exception();
+        }
+        internal int GetPathDirectionPosition(Vector3Int position) {
+            switch ((CubeDir) _direction) {
+                case CubeDir.Right or CubeDir.Left: return position.x;
+                case CubeDir.Up or CubeDir.Down: return position.y;
+                case CubeDir.Forward or CubeDir.Back: return position.z;
+            }
+            Debug.Log($"Failed to get SplitPath position from direction {(CubeDir) _direction}");
+            throw new Exception();
+        }
+    }
+}
