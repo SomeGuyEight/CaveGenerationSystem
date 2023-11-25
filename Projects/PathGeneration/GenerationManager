@@ -416,7 +416,7 @@ namespace SlimeGame.PathWalk {
             bool resetTally = false;
             if (mainPath.TransverseTally >= _mainMaxTransverseMoveTally) {
                 resetTally = true;
-                return ((CubeDir) mainPath.Direction, resetTally);
+                return ((CubeDir)mainPath.Direction, resetTally);
             }
             // Set weight for possible moves based on LocalPosition & Tally counts
             var directionWeights = new int[6];
@@ -434,7 +434,12 @@ namespace SlimeGame.PathWalk {
                 directionWeights[(int) GenerationUtils.InvertDirection(mainPath.PastMoveDirections[0])] = 0;
             }
 
-            return (PickFromWeightedCount(directionWeights), resetTally);
+            // pick index from weighted array
+            int? nullableInt = PickWeightedCountIndex(directionWeights);
+            if (nullableInt == null) {
+                return (null, resetTally);
+            }
+            return ((CubeDir)nullableInt, resetTally);
         }
         private (CubeDir?, bool) PickMoveDirection(SplitPath splitPath) {
             bool resetTally = false;
@@ -470,8 +475,12 @@ namespace SlimeGame.PathWalk {
                 return ((CubeDir) cellDir, resetTally);
             }
 
-            // Pick from weighted count
-            return (PickFromWeightedCount(directionWeights), resetTally);
+            // pick index from weighted array
+            int? nullableInt = PickWeightedCountIndex(directionWeights);
+            if (nullableInt == null) {
+                return (null, resetTally);
+            }
+            return ((CubeDir) nullableInt, resetTally);
         }
         private void SetUpDirectionWeightsArray(ref int[] directionWeights, IPath path, Vector3Int transverseWalkRange, int otherDirWeightFactor, int maxWeightPerDirection) {
             var localPosition = path.GetLocalPosition();
@@ -532,49 +541,33 @@ namespace SlimeGame.PathWalk {
             }
             return null;
         }
-        private CubeDir? PickFromWeightedCount(int[] directionWeights) {
+        /// <summary>
+        /// Pass in an array of int corresponding to another array of weighted choices
+        /// </summary>
+        /// <param name="arrayOfWeights"></param>
+        /// <returns>Returns a random index from the array weighted relative to the passed in int[] values per index</returns>
+        private int? PickWeightedCountIndex(int[] arrayOfWeights) {
             // Pick from weighted count
             int totalWeightedCount = 0;
             // add up all values in directionWeights
-            for (int dir = 0; dir < directionWeights.Length; dir++) {
-                totalWeightedCount = totalWeightedCount + directionWeights[dir];
+            for (int index = 0; index < arrayOfWeights.Length; index++) {
+                totalWeightedCount = totalWeightedCount + arrayOfWeights[index];
             }
             int randomInt = UnityEngine.Random.Range(0, totalWeightedCount);
-            int currentMaxExclusive = directionWeights[(int) CubeDir.Right];
+            int currentMaxExclusive = 0;
 
-            if (randomInt < currentMaxExclusive) {
-                return CubeDir.Right;
-            } else {
-                currentMaxExclusive = currentMaxExclusive + directionWeights[(int) CubeDir.Left];
+            // cycle through array until corresponding index check is passed
+            for (int index = 0; index < arrayOfWeights.Length; index++) {
+                currentMaxExclusive = currentMaxExclusive + arrayOfWeights[index];
+                if (randomInt < currentMaxExclusive) {
+                    return index;
+                }
             }
-            if (randomInt < currentMaxExclusive) {
-                return CubeDir.Left;
-            } else {
-                currentMaxExclusive = currentMaxExclusive + directionWeights[(int) CubeDir.Up];
-            }
-            if (randomInt < currentMaxExclusive) {
-                return CubeDir.Up;
-            } else {
-                currentMaxExclusive = currentMaxExclusive + directionWeights[(int) CubeDir.Down];
-            }
-            if (randomInt < currentMaxExclusive) {
-                return CubeDir.Down;
-            } else {
-                currentMaxExclusive = currentMaxExclusive + directionWeights[(int) CubeDir.Forward];
-            }
-            if (randomInt < currentMaxExclusive) {
-                return CubeDir.Forward;
-            } else {
-                currentMaxExclusive = currentMaxExclusive + directionWeights[(int) CubeDir.Back];
-            }
-            if (randomInt < currentMaxExclusive) {
-                return CubeDir.Back;
-            }
-            Debug.Log($"number was never included during move direction picking => returning null CellDir");
+            Debug.Log($"Random int was never included in weight check => returning null");
             return null;
         }
         #endregion
-
+        
         #region Oject Creation
         private GameObject HandleObjectCreation(Cell cell, IPath path) {
 
