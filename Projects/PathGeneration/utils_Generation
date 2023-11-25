@@ -1,0 +1,91 @@
+using System;
+using Sylves;
+using UnityEngine;
+
+namespace Tessera.CaveGeneration {
+    public static class GenerationUtils { 
+        internal static CellDir InvertDirection(int dir) {
+            switch ((CellDir)dir) {
+                case (CellDir)CubeDir.Right: return (CellDir)CubeDir.Left;
+                case (CellDir)CubeDir.Left: return (CellDir)CubeDir.Right;
+                case (CellDir)CubeDir.Up: return (CellDir)CubeDir.Down;
+                case (CellDir)CubeDir.Down: return (CellDir)CubeDir.Up;
+                case (CellDir)CubeDir.Forward: return (CellDir)CubeDir.Back;
+                case (CellDir)CubeDir.Back: return (CellDir)CubeDir.Forward;
+            }
+            Debug.Log($"Failed to get inverse CubeDir of {(CubeDir)dir}");
+            throw new Exception();
+        }
+        internal static CellDir InvertDirection(CellDir dir) {
+            switch (dir) {
+                case (CellDir)CubeDir.Right: return (CellDir)CubeDir.Left;
+                case (CellDir)CubeDir.Left: return (CellDir)CubeDir.Right;
+                case (CellDir)CubeDir.Up: return (CellDir)CubeDir.Down;
+                case (CellDir)CubeDir.Down: return (CellDir)CubeDir.Up;
+                case (CellDir)CubeDir.Forward: return (CellDir)CubeDir.Back;
+                case (CellDir)CubeDir.Back: return (CellDir)CubeDir.Forward;
+            }
+            Debug.Log($"Failed to get inverse CubeDir of {(CubeDir)dir}");
+            throw new Exception();
+        }
+        internal static CubeDir InvertDirection(CubeDir dir) {
+            switch (dir) {
+                case CubeDir.Right: return CubeDir.Left;
+                case CubeDir.Left: return CubeDir.Right;
+                case CubeDir.Up: return CubeDir.Down;
+                case CubeDir.Down: return CubeDir.Up;
+                case CubeDir.Forward: return CubeDir.Back;
+                case CubeDir.Back: return CubeDir.Forward;
+            }
+            Debug.Log($"Failed to get inverse CubeDir of {dir}");
+            throw new Exception();
+        }
+
+        #region Infinite Generator Utils for Slime Game
+        /// <summary>
+        /// Sets the random Vector3Int representing the Anchor location just outside the Current CoreChunks border & just inside the neighboring chunks border.
+        /// </summary>
+        internal static Vector3Int HandleNewAnchorOffset(CubeDir cubeDir, Vector3Int chunkSizeInCells, Vector3Int minOffset, Vector3Int maxOffset) {
+            // create random anchor positions in this direction
+            var v3Int = new Vector3Int(UnityEngine.Random.Range(minOffset.x, maxOffset.x), UnityEngine.Random.Range(minOffset.y, maxOffset.y), UnityEngine.Random.Range(minOffset.z, maxOffset.z));
+
+            // set the right axis value based on direction
+            switch (cubeDir) {
+                case CubeDir.Left: return new Vector3Int(-1, v3Int.y, v3Int.z);
+                case CubeDir.Right: return new Vector3Int(chunkSizeInCells.x, v3Int.y, v3Int.z);
+                case CubeDir.Up: return new Vector3Int(v3Int.x, chunkSizeInCells.y, v3Int.z);
+                case CubeDir.Down: return new Vector3Int(v3Int.x, -1, v3Int.z);
+                case CubeDir.Forward: return new Vector3Int(v3Int.x, v3Int.y, chunkSizeInCells.z);
+                case CubeDir.Back: return new Vector3Int(v3Int.x, v3Int.y, -1);
+            }
+            Debug.Log($"Failed to add NEW AnchorOffset for cubeDir > {cubeDir}");
+            throw new Exception();
+        }
+        /// <summary>
+        /// Returns the Vector3Int representing the Anchor location just outside the Current CoreChunks border & just inside the neighboring chunks border.
+        /// </summary>
+        internal static Vector3Int HandleAnchorOffset(CubeDir cubeDir, Vector3Int chunkSizeInCells, Vector3Int anchorPositionToOffset) {
+            switch (cubeDir) {
+                case CubeDir.Left: return new Vector3Int(-1, anchorPositionToOffset.y, anchorPositionToOffset.z);
+                case CubeDir.Right: return new Vector3Int(chunkSizeInCells.x, anchorPositionToOffset.y, anchorPositionToOffset.z);
+                case CubeDir.Up: return new Vector3Int(anchorPositionToOffset.x, chunkSizeInCells.y, anchorPositionToOffset.z);
+                case CubeDir.Down: return new Vector3Int(anchorPositionToOffset.x, -1, anchorPositionToOffset.z);
+                case CubeDir.Forward: return new Vector3Int(anchorPositionToOffset.x, anchorPositionToOffset.y, chunkSizeInCells.z);
+                case CubeDir.Back: return new Vector3Int(anchorPositionToOffset.x, anchorPositionToOffset.y, -1);
+            }
+            Debug.Log($"Failed to add Neighbor offset {anchorPositionToOffset} to AnchorOffset for cubeDir > {cubeDir}");
+            throw new Exception();
+        }
+        internal static Bounds Multiply(Matrix4x4 m, Bounds b) {
+            var bx = Abs(m.MultiplyVector(Vector3.right * b.size.x));
+            var by = Abs(m.MultiplyVector(Vector3.up * b.size.y));
+            var bz = Abs(m.MultiplyVector(Vector3.forward * b.size.z));
+            var c = m.MultiplyPoint3x4(b.center);
+            return new Bounds(c, bx + by + bz);
+        }
+        internal static Vector3 Abs(Vector3 v) {
+            return new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
+        }
+        #endregion
+    }
+}
