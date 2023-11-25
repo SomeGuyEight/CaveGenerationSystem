@@ -205,12 +205,12 @@ namespace SlimeGame.PathWalk {
             if (!_walking) {
                 _walking = true;
                 HandlePathWalk(GetPathForWalk());
+                _walking = false;
+                //Debug.Log($"Reached end of HandleWalking this frame");
             }
-
         }
         private MainPath GetPathForWalk() {
             var lastPath = _paths[_paths.Count-1];
-
             if (lastPath.Step >= _maxStepsTotal && _doMultiplePaths) {
 
                 /// TODO: Search for new path to initialize
@@ -220,7 +220,6 @@ namespace SlimeGame.PathWalk {
                 /// 
 
                 lastPath = InitializeMainPath((CellDir)CubeDir.Right);
-                
             } else if (lastPath.Step >= _maxStepsTotal) {
                 Debug.Log($"Move direction is full => returning null Main Path");
                 return null;
@@ -228,7 +227,7 @@ namespace SlimeGame.PathWalk {
             return lastPath;
         }
         private void HandlePathWalk(IPath path) {
-            if (!_walking && _paths.FindLast(path => path != null).Step < _maxStepsTotal) {
+            if (_paths.FindLast(path => path != null).Step < _maxStepsTotal) {
                 if (path != null) {
                     if (path.GetPathType() == PathType.Main) {
                         MainPath mainPath = (MainPath) path;
@@ -245,7 +244,6 @@ namespace SlimeGame.PathWalk {
                             //var splitPathToRemoveAndDestroy = splitRemovalQueue.Dequeue();
                             //mainPath.SplitPathsList.Remove(splitPathToRemoveAndDestroy);
                             mainPath.SplitPathsList.Remove(splitRemovalQueue.Dequeue());
-                            mainPath.SplitPathTally--;
                         }
                     } else if (path.GetPathType() == PathType.Split) {
                         SplitPath splitPath = (SplitPath) path;
@@ -256,6 +254,12 @@ namespace SlimeGame.PathWalk {
                 }
             }
         }
+        /// <summary>
+        /// Walks the Main Path 
+        /// > Attempts to start new split path if current splits are less than max splits
+        /// > Ends when the max main direction steps have happened
+        /// </summary>
+        /// <param name="mainPath"></param>
         private void MainPathLoop(MainPath mainPath) {
             int stepsThisWalk = _maxStepsPerUpdate;
             // Walk loop main Main Path & Split Path initiation Logic
@@ -301,49 +305,11 @@ namespace SlimeGame.PathWalk {
                 MainPathSplitCheck(mainPath);
             }
         }
-        private void MainPathSplitCheck(MainPath mainPath) {
-            mainPath.LastSplitChangeTally++;
-            if (mainPath.SplitPathTally < _maxSplits) {
-                int newSplitWeight = mainPath.SplitPathTally * _newSplitWeightFactor;
-                int testInt = UnityEngine.Random.Range(0, _splitTestWeightTotal);
-                if (newSplitWeight < testInt) {
-                    // get last main path position - 1, so the main path does not walk on the split path
-                    int previousMainPathIndex = mainPath.GetPathDirectionPosition(mainPath.WorldPosition) - 1;
-                    if (mainPath.DirectionalPathPositions.TryGetValue(previousMainPathIndex, out Cell previousMainPathCell)) {
-                        // Pick random transverse direction to walk
-                        CellDir[] transverseDir = mainPath.GetTransverseDirections();
-                        int randomIndex = UnityEngine.Random.Range(0, transverseDir.Length);
-                        CellDir splitDir = transverseDir[randomIndex];
-                        var nullableCell = FindEmptyCellForSplit(mainPath, splitDir, previousMainPathCell);
-                        if (nullableCell != null) {
-                            var cell = (Cell) nullableCell;
-                            mainPath.LastSplitChangeTally = 0;
-                            InitializeSplitPath(mainPath, cell);
-                            var newSplit = mainPath.SplitPathsList[mainPath.SplitPathsList.Count - 1];
-                            newSplit.PastMoveDirections.Insert(0, splitDir);
-                        }
-                    }
-                    // no valid cell was found, just move on for now and try next Main Path step
-                }
-            }
-        }
-        private Cell? FindEmptyCellForSplit(MainPath mainPath, CellDir dir, Cell cell) {
-            Cell? nullableCell = null;
-            Cell currentTryCell = cell;
-            // repeat steps until empty cell is found
-            for (int splitTries = 0; splitTries < _maxSplitTries; splitTries++) {
-                _grid.TryMove(currentTryCell, dir, out Cell newCell, out CellDir currentMoveInverseDir, out Connection connection);
-                if (!mainPath.PathPositionObjects.ContainsKey((Vector3Int) newCell)) {
-                    // Found cell w/o Main Path => check split path cells
-                    if (!mainPath.SplitObjectsDictionary.ContainsKey((Vector3Int) newCell)) {
-                        // Found empty cell => break & return cell
-                        nullableCell = newCell;
-                        break;
-                    }
-                }
-            }
-            return nullableCell;
-        }
+        /// <summary>
+        /// Walks the split path until it merges with a main path or another split path
+        /// </summary>
+        /// <param name="splitPath"></param>
+        /// <returns>if returned true => Enqueue split path to terminate after all splits are done walking</returns>
         private bool SplitPathLoop(SplitPath splitPath) {
             bool addToRemovalQueue = false;
             // Get last main path position - 1
@@ -402,88 +368,73 @@ namespace SlimeGame.PathWalk {
             }
             return addToRemovalQueue;
         }
-        private (CubeDir?, bool) PickMoveDirection(MainPath mainPath) {
-            bool resetTally = false;
-            if (mainPath.TransverseTally >= _mainMaxTransverseMoveTally) {
-                resetTally = true;
-                return ((CubeDir)mainPath.Direction, resetTally);
+        private void MainPathSplitCheck(MainPath mainPath) {
+            mainPath.LastSplitChangeTally++;
+            if (mainPath.SplitPathsList.Count < _maxSplits) {
+                int newSplitWeight = mainPath.SplitPathsList.Count * _newSplitWeightFactor;
+                int testInt = UnityEngine.Random.Range(0, _splitTestWeightTotal);
+                if (newSplitWeight < testInt) {
+                    // get last main path position - 1, so the main path does not walk on the split path
+                    int previousMainPathIndex = mainPath.GetPathDirectionPosition(mainPath.WorldPosition) - 1;
+                    if (mainPath.DirectionalPathPositions.TryGetValue(previousMainPathIndex, out Cell previousMainPathCell)) {
+                        // Pick random transverse direction to walk
+                        CellDir[] transverseDir = mainPath.GetTransverseDirections();
+                        int randomIndex = UnityEngine.Random.Range(0, transverseDir.Length);
+                        CellDir splitDir = transverseDir[randomIndex];
+                        var nullableCell = FindEmptyCellForSplit(mainPath, splitDir, previousMainPathCell);
+                        if (nullableCell != null) {
+                            var cell = (Cell) nullableCell;
+                            mainPath.LastSplitChangeTally = 0;
+                            InitializeSplitPath(mainPath, cell);
+                            var newSplit = mainPath.SplitPathsList[mainPath.SplitPathsList.Count - 1];
+                            newSplit.PastMoveDirections.Insert(0, splitDir);
+                        }
+                    }
+                    // no valid cell was found, just move on for now and try next Main Path step
+                }
             }
-            var directionsWeights = new int[6];
-            // Set weight for possible moves based on LocalPosition & Tally counts
-            directionsWeights[(int) CubeDir.Right] = Mathf.Min((-mainPath.LocalPosition.x + _mainTransverseWalkRange.x) * _mainOtherDirWeightFactor, _mainMaxWeightPerDirection);
-            directionsWeights[(int) CubeDir.Left] = Mathf.Min((mainPath.LocalPosition.x + _mainTransverseWalkRange.x) * _mainOtherDirWeightFactor, _mainMaxWeightPerDirection);
-            directionsWeights[(int) CubeDir.Up] = Mathf.Min((-mainPath.LocalPosition.y + _mainTransverseWalkRange.y) * _mainOtherDirWeightFactor, _mainMaxWeightPerDirection);
-            directionsWeights[(int) CubeDir.Down] = Mathf.Min((mainPath.LocalPosition.y + _mainTransverseWalkRange.y) * _mainOtherDirWeightFactor, _mainMaxWeightPerDirection);
-            directionsWeights[(int) CubeDir.Forward] = Mathf.Min((-mainPath.LocalPosition.z + _mainTransverseWalkRange.z) * _mainOtherDirWeightFactor, _mainMaxWeightPerDirection);
-            directionsWeights[(int) CubeDir.Back] = Mathf.Min((mainPath.LocalPosition.z + _mainTransverseWalkRange.z) * _mainOtherDirWeightFactor, _mainMaxWeightPerDirection);
-            // Adjust weight weight values past move dir
-            for (int index = 0; index < _mainMaxPastMovesWeighted; index++) {
-                if (mainPath.PastMoveDirections.Count > index) {
-                    switch ((CubeDir) mainPath.PastMoveDirections[index]) {
-                        case CubeDir.Right:
-                            directionsWeights[(int) CubeDir.Right] = Mathf.Max(directionsWeights[(int) CubeDir.Right] - (_mainPastMoveWeightsByIndex[index] * _mainPastMoveWeightFactor), 0); break;
-                        case CubeDir.Left:
-                            directionsWeights[(int) CubeDir.Left] = Mathf.Max(directionsWeights[(int) CubeDir.Left] - (_mainPastMoveWeightsByIndex[index] * _mainPastMoveWeightFactor), 0); break;
-                        case CubeDir.Up:
-                            directionsWeights[(int) CubeDir.Up] = Mathf.Max(directionsWeights[(int) CubeDir.Up] - (_mainPastMoveWeightsByIndex[index] * _mainPastMoveWeightFactor), 0); break;
-                        case CubeDir.Down:
-                            directionsWeights[(int) CubeDir.Down] = Mathf.Max(directionsWeights[(int) CubeDir.Down] - (_mainPastMoveWeightsByIndex[index] * _mainPastMoveWeightFactor), 0); break;
-                        case CubeDir.Forward:
-                            directionsWeights[(int) CubeDir.Forward] = Mathf.Max(directionsWeights[(int) CubeDir.Forward] - (_mainPastMoveWeightsByIndex[index] * _mainPastMoveWeightFactor), 0); break;
-                        case CubeDir.Back:
-                            directionsWeights[(int) CubeDir.Back] = Mathf.Max(directionsWeights[(int) CubeDir.Back] - (_mainPastMoveWeightsByIndex[index] * _mainPastMoveWeightFactor), 0); break;
+        }
+        private Cell? FindEmptyCellForSplit(MainPath mainPath, CellDir dir, Cell cell) {
+            Cell? nullableCell = null;
+            Cell currentTryCell = cell;
+            // repeat steps until empty cell is found
+            for (int splitTries = 0; splitTries < _maxSplitTries; splitTries++) {
+                _grid.TryMove(currentTryCell, dir, out Cell newCell, out CellDir currentMoveInverseDir, out Connection connection);
+                if (!mainPath.PathPositionObjects.ContainsKey((Vector3Int) newCell)) {
+                    // Found cell w/o Main Path => check split path cells
+                    if (!mainPath.SplitObjectsDictionary.ContainsKey((Vector3Int) newCell)) {
+                        // Found empty cell => break & return cell
+                        nullableCell = newCell;
+                        break;
                     }
                 }
             }
+            return nullableCell;
+        }
+        private (CubeDir?, bool) PickMoveDirection(MainPath mainPath) {
+
+            bool resetTally = false;
+            if (mainPath.TransverseTally >= _mainMaxTransverseMoveTally) {
+                resetTally = true;
+                return ((CubeDir) mainPath.Direction, resetTally);
+            }
+            // Set weight for possible moves based on LocalPosition & Tally counts
+            var directionWeights = new int[6];
+            SetUpDirectionWeightsArray(ref directionWeights, mainPath, _mainTransverseWalkRange, _mainOtherDirWeightFactor, _mainMaxWeightPerDirection);
+            // Adjust weight weight values past move dir
+            AdjustWeightValueBasedOnPastMoves(ref directionWeights, mainPath, _mainMaxPastMovesWeighted, _mainPastMoveWeightsByIndex, _mainPastMoveWeightFactor);
+
             // Set main dir value based off of transverse movements
-            directionsWeights[(int) mainPath.Direction] = Mathf.Min(_mainPathDirectionWeight + (mainPath.TransverseTally * _mainTransverseTallyWeightFactor), _mainMaxWeightPerDirection);
+            directionWeights[(int) mainPath.Direction] = Mathf.Min(_mainPathDirectionWeight + (mainPath.TransverseTally * _mainTransverseTallyWeightFactor), _mainMaxWeightPerDirection);
             // remove inverse main dir from pool
-            directionsWeights[(int) GenerationUtils.InvertDirection(mainPath.Direction)] = 0;
+            directionWeights[(int) GenerationUtils.InvertDirection(mainPath.Direction)] = 0;
             // remove inverse direction of last move direction from pool
             // > stops from walking back on self
             if (mainPath.PastMoveDirections.Count > 0) {
-                directionsWeights[(int) GenerationUtils.InvertDirection(mainPath.PastMoveDirections[0])] = 0;
+                directionWeights[(int) GenerationUtils.InvertDirection(mainPath.PastMoveDirections[0])] = 0;
             }
-            // Pick from weighted count
-            int totalWeightedCount = 0;
-            // add up all values in directionWeights
-            for (int dir = 0; dir < directionsWeights.Length; dir++) {
-                totalWeightedCount = totalWeightedCount + directionsWeights[dir];
-            }
-            int randomInt = UnityEngine.Random.Range(0, totalWeightedCount);
-            int currentMaxExclusive = directionsWeights[(int) CubeDir.Right];
 
-            if (randomInt < currentMaxExclusive) {
-                return (CubeDir.Right, resetTally);
-            } else {
-                currentMaxExclusive = currentMaxExclusive + directionsWeights[(int) CubeDir.Left];
-            }
-            if (randomInt < currentMaxExclusive) {
-                return (CubeDir.Left, resetTally);
-            } else {
-                currentMaxExclusive = currentMaxExclusive + directionsWeights[(int) CubeDir.Up];
-            }
-            if (randomInt < currentMaxExclusive) {
-                return (CubeDir.Up, resetTally);
-            } else {
-                currentMaxExclusive = currentMaxExclusive + directionsWeights[(int) CubeDir.Down];
-            }
-            if (randomInt < currentMaxExclusive) {
-                return (CubeDir.Down, resetTally);
-            } else {
-                currentMaxExclusive = currentMaxExclusive + directionsWeights[(int) CubeDir.Forward];
-            }
-            if (randomInt < currentMaxExclusive) {
-                return (CubeDir.Forward, resetTally);
-            } else {
-                currentMaxExclusive = currentMaxExclusive + directionsWeights[(int) CubeDir.Back];
-            }
-            if (randomInt < currentMaxExclusive) {
-                return (CubeDir.Back, resetTally);
-            }
-            Debug.Log($"number was never included during move direction picking => returning null CellDir");
-            return (null, resetTally);
-
+            return (PickFromWeightedCount(directionWeights), resetTally);
         }
         private (CubeDir?, bool) PickMoveDirection(SplitPath splitPath) {
             bool resetTally = false;
@@ -491,110 +442,136 @@ namespace SlimeGame.PathWalk {
                 resetTally = true;
                 return ((CubeDir) splitPath.Direction, resetTally);
             }
-            var directionsWeights = new int[6];
 
             // Set weight for possible moves based on LocalPosition & Tally counts
-            directionsWeights[(int) CubeDir.Right] = Mathf.Min((-splitPath.LocalPosition.x + _splitTransverseWalkRange.x) * _splitOtherDirWeightFactor, _splitMaxWeightPerDirection);
-            directionsWeights[(int) CubeDir.Left] = Mathf.Min((splitPath.LocalPosition.x + _splitTransverseWalkRange.x) * _splitOtherDirWeightFactor, _splitMaxWeightPerDirection);
-            directionsWeights[(int) CubeDir.Up] = Mathf.Min((-splitPath.LocalPosition.y + _splitTransverseWalkRange.y) * _splitOtherDirWeightFactor, _splitMaxWeightPerDirection);
-            directionsWeights[(int) CubeDir.Down] = Mathf.Min((splitPath.LocalPosition.y + _splitTransverseWalkRange.y) * _splitOtherDirWeightFactor, _splitMaxWeightPerDirection);
-            directionsWeights[(int) CubeDir.Forward] = Mathf.Min((-splitPath.LocalPosition.z + _splitTransverseWalkRange.z) * _splitOtherDirWeightFactor, _splitMaxWeightPerDirection);
-            directionsWeights[(int) CubeDir.Back] = Mathf.Min((splitPath.LocalPosition.z + _splitTransverseWalkRange.z) * _splitOtherDirWeightFactor, _splitMaxWeightPerDirection);
-
+            var directionWeights = new int[6];
+            SetUpDirectionWeightsArray(ref directionWeights, splitPath, _splitTransverseWalkRange, _splitOtherDirWeightFactor, _splitMaxWeightPerDirection);
             // Adjust weight weight values past move dir
-            for (int index = 0; index < _splitMaxPastMovesWeighted; index++) {
-                if (splitPath.PastMoveDirections.Count > index) {
-                    switch ((CubeDir) splitPath.PastMoveDirections[index]) {
-                        case CubeDir.Right:
-                            directionsWeights[(int) CubeDir.Right] = Mathf.Max(directionsWeights[(int) CubeDir.Right] - (_splitPastMoveWeightsByIndex[index] * _splitPastMoveWeightFactor), 0); break;
-                        case CubeDir.Left:
-                            directionsWeights[(int) CubeDir.Left] = Mathf.Max(directionsWeights[(int) CubeDir.Left] - (_splitPastMoveWeightsByIndex[index] * _splitPastMoveWeightFactor), 0); break;
-                        case CubeDir.Up:
-                            directionsWeights[(int) CubeDir.Up] = Mathf.Max(directionsWeights[(int) CubeDir.Up] - (_splitPastMoveWeightsByIndex[index] * _splitPastMoveWeightFactor), 0); break;
-                        case CubeDir.Down:
-                            directionsWeights[(int) CubeDir.Down] = Mathf.Max(directionsWeights[(int) CubeDir.Down] - (_splitPastMoveWeightsByIndex[index] * _splitPastMoveWeightFactor), 0); break;
-                        case CubeDir.Forward:
-                            directionsWeights[(int) CubeDir.Forward] = Mathf.Max(directionsWeights[(int) CubeDir.Forward] - (_splitPastMoveWeightsByIndex[index] * _splitPastMoveWeightFactor), 0); break;
-                        case CubeDir.Back:
-                            directionsWeights[(int) CubeDir.Back] = Mathf.Max(directionsWeights[(int) CubeDir.Back] - (_splitPastMoveWeightsByIndex[index] * _splitPastMoveWeightFactor), 0); break;
-                    }
-                }
-            }
+            AdjustWeightValueBasedOnPastMoves(ref directionWeights, splitPath, _splitMaxPastMovesWeighted, _splitPastMoveWeightsByIndex, _splitPastMoveWeightFactor);
             // Set main dir value based off of transverse movements
-            directionsWeights[(int) splitPath.Direction] = Mathf.Min(_splitPathDirectionWeight + (splitPath.TransverseTally * _splitTransverseTallyWeightFactor), _splitMaxWeightPerDirection);
+            directionWeights[(int) splitPath.Direction] = Mathf.Min(_splitPathDirectionWeight + (splitPath.TransverseTally * _splitTransverseTallyWeightFactor), _splitMaxWeightPerDirection);
             // remove inverse main dir from pool
-            directionsWeights[(int) GenerationUtils.InvertDirection(splitPath.Direction)] = 0;
+            directionWeights[(int) GenerationUtils.InvertDirection(splitPath.Direction)] = 0;
             // remove inverse direction of last move direction from pool
             // > stops from walking back on self
             if (splitPath.PastMoveDirections.Count > 0) {
-                directionsWeights[(int) GenerationUtils.InvertDirection(splitPath.PastMoveDirections[0])] = 0;
+                directionWeights[(int) GenerationUtils.InvertDirection(splitPath.PastMoveDirections[0])] = 0;
             }
 
             // Adjust weights based on distance from main path cell to favor moving towards main path
             // > use step count to increase liklihood of moving towards main path
             // >> as step count increases => more likely to move towards main path
-            Vector3Int positionRelativeToMainPath = splitPath.GetLocalPosition();
             // if any direction is outside of Split Path Range => move towards path
             // * should not need to worry axis of path, b/c relative axis position will always be 0
-            if (positionRelativeToMainPath.x > _splitTransverseWalkRange.x) {
-                Debug.Log($"+X distance too far");
-                return (CubeDir.Left, resetTally);
-            } else if (positionRelativeToMainPath.x < -_splitTransverseWalkRange.x) {
-                Debug.Log($"-X distance too far");
-                return (CubeDir.Right, resetTally);
-            } else if (positionRelativeToMainPath.y > _splitTransverseWalkRange.y) {
-                Debug.Log($"+Y distance too far");
-                return (CubeDir.Down, resetTally);
-            } else if (-positionRelativeToMainPath.y < -_splitTransverseWalkRange.y) {
-                Debug.Log($"-Y distance too far");
-                return (CubeDir.Up, resetTally);
-            } else if (positionRelativeToMainPath.z > _splitTransverseWalkRange.z) {
-                Debug.Log($"+Z distance too far");
-                return (CubeDir.Back, resetTally);
-            } else if (-positionRelativeToMainPath.z < -_splitTransverseWalkRange.z) {
-                Debug.Log($"-Z distance too far");
-                return (CubeDir.Forward, resetTally);
+            Vector3Int positionRelativeToMainPath = splitPath.GetLocalPosition();
+            bool returnThisDir = false;
+            var cellDir = HandlePathFunnel(positionRelativeToMainPath, _splitTransverseWalkRange, ref returnThisDir);
+            if (returnThisDir) {
+                return ((CubeDir) cellDir, resetTally);
             }
 
             // Pick from weighted count
+            return (PickFromWeightedCount(directionWeights), resetTally);
+        }
+        private void SetUpDirectionWeightsArray(ref int[] directionWeights, IPath path, Vector3Int transverseWalkRange, int otherDirWeightFactor, int maxWeightPerDirection) {
+            var localPosition = path.GetLocalPosition();
+            // Set weight for possible moves based on LocalPosition & Tally counts
+            directionWeights[(int)CubeDir.Right] = Mathf.Min((-localPosition.x + transverseWalkRange.x) * otherDirWeightFactor, maxWeightPerDirection);
+            directionWeights[(int)CubeDir.Left] = Mathf.Min((localPosition.x + transverseWalkRange.x) * otherDirWeightFactor, maxWeightPerDirection);
+            directionWeights[(int)CubeDir.Up] = Mathf.Min((-localPosition.y + transverseWalkRange.y) * otherDirWeightFactor, maxWeightPerDirection);
+            directionWeights[(int)CubeDir.Down] = Mathf.Min((localPosition.y + transverseWalkRange.y) * otherDirWeightFactor, maxWeightPerDirection);
+            directionWeights[(int)CubeDir.Forward] = Mathf.Min((-localPosition.z + transverseWalkRange.z) * otherDirWeightFactor, maxWeightPerDirection);
+            directionWeights[(int)CubeDir.Back] = Mathf.Min((localPosition.z + transverseWalkRange.z) * otherDirWeightFactor, maxWeightPerDirection);
+        }
+        private void AdjustWeightValueBasedOnPastMoves(ref int[] directionWeights, IPath path, int maxPastMovesWeighted, int[] pastMoveWeightsByIndex, int pastMoveWeightFactor) {
+            var pastMoveDir = path.GetPastMoveDirections();
+            for (int index = 0; index < maxPastMovesWeighted; index++) {
+                if (pastMoveDir.Count > index) {
+                    switch ((CubeDir)pastMoveDir[index]) {
+                        case CubeDir.Right:
+                            directionWeights[(int)CubeDir.Right] = Mathf.Max(directionWeights[(int)CubeDir.Right] - (pastMoveWeightsByIndex[index] * pastMoveWeightFactor), 0); break;
+                        case CubeDir.Left:
+                            directionWeights[(int)CubeDir.Left] = Mathf.Max(directionWeights[(int)CubeDir.Left] - (pastMoveWeightsByIndex[index] * pastMoveWeightFactor), 0); break;
+                        case CubeDir.Up:
+                            directionWeights[(int)CubeDir.Up] = Mathf.Max(directionWeights[(int)CubeDir.Up] - (pastMoveWeightsByIndex[index] * pastMoveWeightFactor), 0); break;
+                        case CubeDir.Down:
+                            directionWeights[(int)CubeDir.Down] = Mathf.Max(directionWeights[(int)CubeDir.Down] - (pastMoveWeightsByIndex[index] * pastMoveWeightFactor), 0); break;
+                        case CubeDir.Forward:
+                            directionWeights[(int)CubeDir.Forward] = Mathf.Max(directionWeights[(int)CubeDir.Forward] - (pastMoveWeightsByIndex[index] * pastMoveWeightFactor), 0); break;
+                        case CubeDir.Back:
+                            directionWeights[(int)CubeDir.Back] = Mathf.Max(directionWeights[(int)CubeDir.Back] - (pastMoveWeightsByIndex[index] * pastMoveWeightFactor), 0); break;
+                    }
+                }
+            }
+        }
+        private CellDir? HandlePathFunnel(Vector3Int relativePosition, Vector3Int maxRange, ref bool returnThisDir) {
+            if (relativePosition.x > maxRange.x) {
+                Debug.Log($"+X distance too far");
+                returnThisDir = true;
+                return (CellDir)CubeDir.Left;
+            } else if (relativePosition.x < -maxRange.x) {
+                Debug.Log($"-X distance too far");
+                returnThisDir = true;
+                return (CellDir) CubeDir.Right;
+            } else if (relativePosition.y > maxRange.y) {
+                Debug.Log($"+Y distance too far");
+                returnThisDir = true;
+                return (CellDir) CubeDir.Down;
+            } else if (-relativePosition.y < -maxRange.y) {
+                Debug.Log($"-Y distance too far");
+                returnThisDir = true;
+                return (CellDir) CubeDir.Up;
+            } else if (relativePosition.z > maxRange.z) {
+                Debug.Log($"+Z distance too far");
+                returnThisDir = true;
+                return (CellDir) CubeDir.Back;
+            } else if (-relativePosition.z < -maxRange.z) {
+                Debug.Log($"-Z distance too far");
+                returnThisDir = true;
+                return (CellDir) CubeDir.Forward;
+            }
+            return null;
+        }
+        private CubeDir? PickFromWeightedCount(int[] directionWeights) {
+            // Pick from weighted count
             int totalWeightedCount = 0;
             // add up all values in directionWeights
-            for (int dir = 0; dir < directionsWeights.Length; dir++) {
-                totalWeightedCount = totalWeightedCount + directionsWeights[dir];
+            for (int dir = 0; dir < directionWeights.Length; dir++) {
+                totalWeightedCount = totalWeightedCount + directionWeights[dir];
             }
             int randomInt = UnityEngine.Random.Range(0, totalWeightedCount);
-            int currentMaxExclusive = directionsWeights[(int) CubeDir.Right];
+            int currentMaxExclusive = directionWeights[(int) CubeDir.Right];
 
             if (randomInt < currentMaxExclusive) {
-                return (CubeDir.Right, resetTally);
+                return CubeDir.Right;
             } else {
-                currentMaxExclusive = currentMaxExclusive + directionsWeights[(int) CubeDir.Left];
+                currentMaxExclusive = currentMaxExclusive + directionWeights[(int) CubeDir.Left];
             }
             if (randomInt < currentMaxExclusive) {
-                return (CubeDir.Left, resetTally);
+                return CubeDir.Left;
             } else {
-                currentMaxExclusive = currentMaxExclusive + directionsWeights[(int) CubeDir.Up];
+                currentMaxExclusive = currentMaxExclusive + directionWeights[(int) CubeDir.Up];
             }
             if (randomInt < currentMaxExclusive) {
-                return (CubeDir.Up, resetTally);
+                return CubeDir.Up;
             } else {
-                currentMaxExclusive = currentMaxExclusive + directionsWeights[(int) CubeDir.Down];
+                currentMaxExclusive = currentMaxExclusive + directionWeights[(int) CubeDir.Down];
             }
             if (randomInt < currentMaxExclusive) {
-                return (CubeDir.Down, resetTally);
+                return CubeDir.Down;
             } else {
-                currentMaxExclusive = currentMaxExclusive + directionsWeights[(int) CubeDir.Forward];
+                currentMaxExclusive = currentMaxExclusive + directionWeights[(int) CubeDir.Forward];
             }
             if (randomInt < currentMaxExclusive) {
-                return (CubeDir.Forward, resetTally);
+                return CubeDir.Forward;
             } else {
-                currentMaxExclusive = currentMaxExclusive + directionsWeights[(int) CubeDir.Back];
+                currentMaxExclusive = currentMaxExclusive + directionWeights[(int) CubeDir.Back];
             }
             if (randomInt < currentMaxExclusive) {
-                return (CubeDir.Back, resetTally);
+                return CubeDir.Back;
             }
             Debug.Log($"number was never included during move direction picking => returning null CellDir");
-            return (null, resetTally);
+            return null;
         }
         #endregion
 
