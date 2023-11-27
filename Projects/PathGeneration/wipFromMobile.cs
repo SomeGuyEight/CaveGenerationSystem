@@ -1,6 +1,5 @@
-	/* just some functions and thoughts when I did not have access to my computer */
-
-void HandleDirectionChoice() {
+/* just some functions and thoughts when I did not have access to my computer */
+internal void HandleDirectionChoice() {
 	
 	Vector3Int startPoint = Vector3Int.zero;
 	Vector3Int endPoint = Vector3Int.zero;
@@ -36,7 +35,7 @@ void HandleDirectionChoice() {
 	 */
 }
 
-static int GetDivn(int dividend, int devisor) { 
+internal static int GetDiv(int dividend, int devisor) { 
 
 }
 
@@ -80,9 +79,9 @@ internal static List<KeyValuePair<int,float>> GetDistanceChangeByDirection(this 
 
 	// descending will give the one that progresses towards the endpoint the most at the front
 	List<KeyValuePair<int,float>> sortedKeyValuePairs = (
-    	from keyValuePair in dictionary
-    	orderby keyValuePair.Value descending
-    	select keyValuePair
+	from keyValuePair in dictionary
+	orderby keyValuePair.Value descending
+	select keyValuePair
 	).ToList();
 
 	return distanceChanges;
@@ -108,4 +107,3 @@ internal static int? ChooseDirection(List<KeyValuePair<int,float>> distanceChang
 	}
 	return null;
 }
-
