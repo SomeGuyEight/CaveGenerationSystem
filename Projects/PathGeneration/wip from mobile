@@ -36,8 +36,24 @@ void HandleDirectionChoice() {
 	 */
 }
 
+static int GetDivn(int dividend, int devisor) { 
 
-List<KeyValuePair<int,float>> GetDistanceChangeByDirection(Vector3Int startPoint, Vector3Int endPoint) {
+}
+
+// if exponent > 0 => returns true exponential results; OR if exponent <= 0 => returns 0 to remove from weighted test;
+internal static int GetExpWeight(this int base, int exponent) {
+	int result = base;
+	if (exponent <= 0) {
+		return 0;
+	} else if (int > 0) {
+		for (int i = 0; i < exponent; i++) {
+			result = result * base;
+		}
+	}
+	return result;
+}
+
+internal static List<KeyValuePair<int,float>> GetDistanceChangeByDirection(this Vector3Int startPoint, Vector3Int endPoint) {
 	
 	var distanceChanges = new Dictionary<int, float>();
 
@@ -63,7 +79,7 @@ List<KeyValuePair<int,float>> GetDistanceChangeByDirection(Vector3Int startPoint
 	return distanceChanges;
 }
 		
-int? ChooseDirection(List<KeyValuePair<int,float>> distanceChanges, int dirTestQuantity) {
+internal static int? ChooseDirection(List<KeyValuePair<int,float>> distanceChanges, int dirTestQuantity) {
 
 	dirTestQuantity = Mathf.Max(distanceChanges.Count, dirTestQuantity);
 	int totalTestCount = 0;
