@@ -40,7 +40,12 @@ static int GetDivn(int dividend, int devisor) {
 
 }
 
-// if exponent > 0 => returns true exponential results; OR if exponent <= 0 => returns 0 to remove from weighted test;
+
+
+/// <summary/> 
+/// if exponent > 0 => returns true exponential results; OR if exponent <= 0 => returns 0 to remove from weighted test;
+/// </summary>
+/// <par
 internal static int GetExpWeight(this int base, int exponent) {
 	int result = base;
 	if (exponent <= 0) {
@@ -52,6 +57,8 @@ internal static int GetExpWeight(this int base, int exponent) {
 	}
 	return result;
 }
+
+
 
 internal static List<KeyValuePair<int,float>> GetDistanceChangeByDirection(this Vector3Int startPoint, Vector3Int endPoint) {
 	
@@ -78,7 +85,9 @@ internal static List<KeyValuePair<int,float>> GetDistanceChangeByDirection(this 
 
 	return distanceChanges;
 }
-		
+
+
+
 internal static int? ChooseDirection(List<KeyValuePair<int,float>> distanceChanges, int dirTestQuantity) {
 
 	dirTestQuantity = Mathf.Max(distanceChanges.Count, dirTestQuantity);
