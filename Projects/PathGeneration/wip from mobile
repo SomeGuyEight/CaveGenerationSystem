@@ -6,9 +6,10 @@ void HandleDirectionChoice() {
 	Vector3Int endPoint = Vector3Int.zero;
 
 	// (Key) int == (int)CubeDir & (Value)float == change in magnitude
-	var distanceChanges = new Dictionary<int,float>();
+	var distanceChanges = new List<KeyValuePair<<int,float>>();
 	distanceChanges = GetDistanceChangeByDirection(startPoint, endpoint);
 
+	// can square the value to exponentially increas an options choice, b/c the larger will get even larger etc
 	/* choose the amount of directions to choose from
 	 * > 3 guarantees step will not move backwards	 
 	 * >> but if inline with two axis it will favor dir by enum index
@@ -16,7 +17,15 @@ void HandleDirectionChoice() {
 	 * > 5 covers the caveat above, but may choose dir away from end point
 	 * >> small chance choice will move away from end point
 	 * 
-	 * > solution: as path gets closer to endPoint 
+	 * > solution 1: when choosing directions to weigh in
+	 * >> when at the last index
+	 * >> check if next index is the same #
+	 * >>> if true add the direction to the pool, but halve both weights
+	 * >>>> halve b/c if all same are added equally, it will dilute the pool
+	 * >>> repeat until all = values included in pool
+	 * >>> may need to check previous values to make sure they are not equal to the last... only happens if in line with 2 axis
+	 * 
+	 * > solution 2: as path gets closer to endPoint 
 	 * >> force no moves that increase distance from end
 	 * >> it will always weight the ~shortest route highest
 	 * 
@@ -25,10 +34,10 @@ void HandleDirectionChoice() {
 	 *
 	 * > 'fix': only have - moves fully eliminated within a threshhold
 	 */
-
 }
 
-Dictionary<int,float> GetDistanceChangeByDirection(Vector3Int startPoint, Vector3Int endPoint) {
+
+List<KeyValuePair<int,float>> GetDistanceChangeByDirection(Vector3Int startPoint, Vector3Int endPoint) {
 	
 	var distanceChanges = new Dictionary<int, float>();
 
@@ -41,13 +50,20 @@ Dictionary<int,float> GetDistanceChangeByDirection(Vector3Int startPoint, Vector
 	distanceChanges[(int)CubeDir.Forward] = currentMagnitude - (endPoint- new Vector3Int(startPoint.x, startPoint.y, startPoint.z+1).magnitude;  
 	distanceChanges[(int)CubeDir.Back] = currentMagnitude - (endPoint- new Vector3Int(startPoint.x, startPoint.y, startPoint.z-1).magnitude;
 	
-	// shortest distances first
-	distanceChanges.OrderBy(x => x.Value)
+	// shortest distances first, so those that move towards the target the least...
+	// distanceChanges.OrderBy(x => x.Value)
+
+	// descending will give the one that progresses towards the endpoint the most at the front
+	List<KeyValuePair<int,float>> sortedKeyValuePairs = (
+    	from keyValuePair in dictionary
+    	orderby keyValuePair.Value descending
+    	select keyValuePair
+	).ToList();
 
 	return distanceChanges;
 }
 		
-int? ChooseDirection(Dictionary<int,float> distanceChanges, int dirTestQuantity) {
+int? ChooseDirection(List<KeyValuePair<int,float>> distanceChanges, int dirTestQuantity) {
 
 	dirTestQuantity = Mathf.Max(distanceChanges.Count, dirTestQuantity);
 	int totalTestCount = 0;
