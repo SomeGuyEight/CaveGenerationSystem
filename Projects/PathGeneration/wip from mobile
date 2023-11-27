@@ -42,10 +42,12 @@ static int GetDivn(int dividend, int devisor) {
 
 
 
-/// <summary/> 
-/// if exponent > 0 => returns true exponential results; OR if exponent <= 0 => returns 0 to remove from weighted test;
+/// <summary>
+/// For fast exponential results when weighting pathing parameters
 /// </summary>
-/// <par
+/// <param name="base"></param>
+/// <param name="exponent"></param>
+/// <returns>if exponent > 0 => returns true exponential results; OR if exponent <= 0 => returns 0 to remove from weighted test;</returns>
 internal static int GetExpWeight(this int base, int exponent) {
 	int result = base;
 	if (exponent <= 0) {
