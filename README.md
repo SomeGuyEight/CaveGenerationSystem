@@ -9,7 +9,7 @@
     
 
 # Getting Started 
-- [See the setup steps in the project file](https://github.com/SomeGuyEight/CaveGenerationSystem/tree/main/project#getting-the-project-set-up)
+- See the [set-up-README](project/getting-started/set-up-README.md) for the steps to set up a project
 
 # Using the project 
 - [Runtime Controls](project/instructions/controls-README.md)
