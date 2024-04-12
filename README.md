@@ -13,10 +13,13 @@
 
 # Assets used in the project
 
-## Unity Assets
-1. Cinemachine
-2. Probuilder
-3. TextMeshPro
+## Unity Registry Assets
+1. Mathematics
+2. UnityInputSystem
+3. UnityUI
+4. Cinemachine
+5. Probuilder
+6. TextMeshPro
 
 ## Paid Assets ( required )
   1. Tessera Pro by Boris the Brave
