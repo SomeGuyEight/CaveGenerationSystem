@@ -46,7 +46,7 @@
   5. Technie Collider Creator 2 by Triangular Pixels
       - [Technie Collider Creator 2 Asset Store Page](https://assetstore.unity.com/packages/tools/physics/technie-collider-creator-2-217070)
       - [Triangular Pixels' Asset Store Page](https://assetstore.unity.com/publishers/19916)
-      - The asset was used to generate the meshes referenced by all the prototype objects in the project. This asset has been removed for more accessability, but I would definetely recommend the asset.
+      - The asset was used to generate the meshes referenced by all the prototype objects colliders in the project. This asset has been removed for more accessability, but I would definetely recommend the asset.
     
 
 
