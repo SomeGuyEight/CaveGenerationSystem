@@ -19,27 +19,40 @@ namespace SlimeGame
             List<SylvesOrientedFace> orientedFaces = new ();
             foreach (var ic in constraints)
             {
-                /// TODO: 
-                /// 1. Handle volumes => ?? place box collider or gizmo & new obj name has info ??
-                /// 2. Make a better workaround for volume constraints
-                /// > In current implementation of <see cref="TesseraVolumeFilter"/> ... <see cref="Dummy_TesseraVolumeFilter"/>
-                ///     >> return null when Cell, Offsets, or FaceDetails are requested
-                ///     >> throws an exception when CellRotation are requested
-                if (ic is TesseraVolumeFilter)
+                /// TODO: Handle volume filters
+                Vector3Int icCell;
+                Sylves.CellRotation icCellRotation;
+                List<Vector3Int> icOffsets;
+                List<SylvesOrientedFace> icOrientedFaces;
+                
+                if (ic is TesseraInitialConstraint initialConstraint)
+                {
+                    if (!initialConstraint.TryGetInternalValues(out icCell,out icCellRotation, out icOffsets,out icOrientedFaces))
+                    {
+                        continue;
+                    }
+                }
+                else if (ic is TesseraPinConstraint pinConstraint)
+                {
+                    if (!pinConstraint.TryGetInternalValues(out icCell,out icCellRotation,out icOffsets,out icOrientedFaces))
+                    {
+                        continue;
+                    }
+                }
+                else
                 {
                     continue;
                 }
 
-                var cell = (Vector3Int)ic.Cell;
-                foreach (var offset in ic.Offsets)
+                foreach (var offset in icOffsets)
                 {
-                    offsets.Add(offset + cell);
+                    offsets.Add(offset + icCell);
                 }
-                foreach (var orientedFace in ic.FaceDetails)
+                foreach (var orientedFace in icOrientedFaces)
                 {
                     orientedFace.Deconstruct(out var faceOffset,out var dir,out var faceDetails);
-                    var (rotatedDir, rotatedDetails) = CubeCellType.Instance.RotateBy(dir,faceDetails,ic.CellRotation);
-                    orientedFaces.Add(new(faceOffset + cell,rotatedDir,rotatedDetails));
+                    var (rotatedDir, rotatedDetails) = CubeCellType.Instance.RotateBy(dir,faceDetails,icCellRotation);
+                    orientedFaces.Add(new(faceOffset + icCell,rotatedDir,rotatedDetails));
                 }
             }
             tileObj.transform.position = Vector3.Scale(generationBound.min + new Vector3(.5f,.5f,.5f),cellSize);
