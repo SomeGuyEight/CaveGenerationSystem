@@ -8,6 +8,8 @@ namespace SlimeGame
     public class SlimeGameToTessera
     {
 
+        #region ( !! ) Changes required for system to function
+
 
         #region Tessera Tile Instance
 
@@ -17,14 +19,10 @@ namespace SlimeGame
         ///     => <see cref="TesseraTileInstance.Position"/>  
         //
         ///     Position & LocalPosition => implemented by
-        ///         1. <see cref="TesseraUtils.AlignCellsAndPosition"/>
-        ///             => <see cref="TesseraUtils.AlignPosition"/>
+        ///         1. <see cref="TesseraUtils.AlignPosition"/>
         ///         2. <see cref="BigTileGenerator.InitializeCellToTesseraTileInstances"/>
         ///     Cell => implemented by 
-        ///         1. <see cref="TesseraUtils.AlignCellsAndPosition"/>
-        ///             => <see cref="TesseraUtils.AlignCells"/>
-        ///             
-
+        ///         1. <see cref="TesseraUtils.AlignCells"/>
         #endregion
 
 
@@ -38,8 +36,8 @@ namespace SlimeGame
         ///         2. <see cref="CellInstance.GetSkyboxConstraint"/>
         ///         3. <see cref="ICellInstanceCollection.GetInitialConstraint"/>
         ///         4. <see cref="ICellTypesCollection.GetInitialConstraint"/>
-
-        #region TesseraInitialConstraintBuilder modification => new method GetInitialConstraint
+        ///
+        #region new method
 
         /// <see cref="TesseraInitialConstraintBuilder"/>>
         public void GetInitialConstraint()
@@ -76,9 +74,7 @@ namespace SlimeGame
         ///         3. <see cref="InstanceGenerator.GenerateInstanceBounds"/>
         ///             => <see cref="GenerationUtils.CreateDebugObject"/>
         ///
-
-        #region TesseraTileBase modification => new method
-
+        #region new method
         /// add the following method to <see cref="TesseraTileBase"/>
         public void OverrideOffsetsAndOrientedFaces(List<Vector3Int> offsets,List<SylvesOrientedFace> orientedFaces)
         {
@@ -96,36 +92,16 @@ namespace SlimeGame
             //}
             //sylvesFaceDetails = orientedFaces;
         }
-
         #endregion
-        #endregion
-
-
-        #region Tessera Stats
-
-        /// <see cref="TesseraStats"/> => from internal => public
-        //
-        ///     => implemented by 
-        ///         1. <see cref="FullGenerationStats"/>
-        ///         2. <see cref="InstanceGenerator.GenerateInstanceBounds"/>
-        ///             => <see cref="GenerationManager.AddGenerationStats"/>
-        ///         3. <see cref="GenerationManager.SaveFullGenerationStatsToExcel"/>
-        ///             => <see cref="StatsCSVWriter.SaveCompletionAndStatsCSV"/>
-        ///
-
-        #region Tessera Generate Options
-
-        /// <see cref="TesseraGenerateOptions"/> => add action
-        ///     => public Action<TesseraStats> returnStats;
-        // 
-        ///     => implemented by 
-        ///         1. <see cref="InstanceGenerator.GenerateInstanceBounds"/>
-        /// 
-
         #endregion
         #endregion
 
 
+
+        #region ( !! ) Optional changes to implement
+
+
+        // To implement initial constraints debug object
         #region Tessera Tile Instance
 
         /// <see cref="ITesseraInitialConstraint"/> => implement public getters for => Cell, CellRotation, & FaceDetails
@@ -139,7 +115,7 @@ namespace SlimeGame
         ///             => needs <see cref="GenerationUtils.CreateDebugObject"/>
         /// 
 
-        #region ITesseraInitialConstraint modification => new public getters
+        #region new getters
         /// ( !! ) Important: Adding these open up the references, but the methods implemented do not change any of the values
         ///     >> having the references may lead to 'mutations' if implemented beyond what is here
         ///     >> be careful not to assign to the references if accessing elsewhere
@@ -172,7 +148,7 @@ namespace SlimeGame
             //public List<Vector3Int> Offsets { get { return offsets; } }
             //public Sylves.CellRotation CellRotation { get { return rotation; } }
         }
-        
+
         public class _TesseraVolumeFilter : _ITesseraInitialConstraint
         {
             /// <see cref="TesseraVolumeFilter"/>
@@ -195,5 +171,46 @@ namespace SlimeGame
         #endregion
 
 
+        // To implement statistics related methods
+        #region Tessera Stats
+
+        /// <see cref="TesseraStats"/> => from internal => public
+        //
+        ///     => implemented by 
+        ///         1. <see cref="FullGenerationStats"/>
+        ///         2. <see cref="InstanceGenerator.GenerateInstanceBounds"/>
+        ///             => <see cref="GenerationManager.AddGenerationStats"/>
+        ///                 => <see cref="StatsCSVWriter.SaveCompletionAndStatsCSV"/>
+        ///
+        #endregion
+
+
+        #region Tessera Generate Options
+
+        /// <see cref="TesseraGenerateOptions"/> => add action
+        ///     add -> public Action<TesseraStats> returnStats;
+        // 
+        ///     => implemented by 
+        ///         1. <see cref="InstanceGenerator.GenerateInstanceBounds"/>
+        ///
+        #endregion
+
+
+        #region Tessera Generator
+
+        /// <see cref="TesseraGenerator.StartGenerateInner"/> => add implementation of returnStats action
+        // 
+        ///     => implemented by
+        ///         1. <see cref="InstanceGenerator.GenerateInstanceBounds"/>
+        ///
+        #region lines to add/modify
+        ///     implementation to add in TesseraGenerator.StartGenerateInner ~line 540:
+        ///         => modify the two lines notated by ">>>" below
+        ///         
+        ///         var stats = generatorHelper.Stats;
+        ///         options.returnStats?.Invoke(stats);
+        #endregion
+        #endregion
+        #endregion
     }
 }
