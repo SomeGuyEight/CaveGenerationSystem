@@ -1,6 +1,6 @@
 # Getting the project set up
 
-### If you have access to the Template_SGExampleProject.0.1.0.zip file
+### If you have access to the *Template_SGExampleProject.0.1.0.zip* file
 * Just unzip the file & launch it as a new project in unity. You can skip to #3 below.
 * If you don't have the file you will just need to create a new project from scratch.
 
