@@ -1,8 +1,9 @@
 # TODO:
-1. Overviews of project
-2. Instances
-3. Steps to setup the project in unity
-4. 'Roadmap'/Other features I am working on
+1. Finish the Read me...
+2. Overviews of project
+3. Instances
+4. Steps to setup the project in unity
+5. 'Roadmap'/Other features I am working on
    - Functioning, but not on github yet
    - Started, but not implemented, integrated, or functioning
    - Not started, but would like to implement
