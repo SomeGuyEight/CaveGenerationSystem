@@ -39,8 +39,7 @@
 
 
 ## Free Assets ( Files already inside [SGProjectFiles.0.1.0](project/unity-packages/SGProjectFiles.0.1.0.unitypackage) Unity package )
-  1. Polygon Starter Pack by Synty Studios
-      - Just the shader & material used for the global grid meshes
+  1. Polygon Starter Pack by Synty Studios ( Just the shader & material used for the global grid meshes )
       - [Polygon Starter Pack's - Asset Store Page](https://assetstore.unity.com/packages/essentials/tutorial-projects/polygon-starter-pack-low-poly-3d-art-by-synty-156819)
       - [Synty Studios' - Asset Store Page](https://assetstore.unity.com/publishers/5217)
   3. C# Wizard by Pinwheel Studios
