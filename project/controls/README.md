@@ -1,5 +1,5 @@
 # Runtime HUD & UI
-![hud](https://github.com/SomeGuyEight/CaveGenerationSystem/assets/137923841/11191186-5df9-409b-ab52-3a6ac34f1a99)
+![hud](https://github.com/SomeGuyEight/CaveGenerationSystem/assets/137923841/a2a9ec02-d489-4134-b048-18ecbae0c6e5)
 
 # Hotbar
 ![hot bar](https://github.com/SomeGuyEight/CaveGenerationSystem/assets/137923841/a7cc0839-d4aa-4aca-89ec-04f9ffca3923)
