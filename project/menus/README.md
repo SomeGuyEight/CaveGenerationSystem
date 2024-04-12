@@ -6,14 +6,14 @@
 ![main menu](https://github.com/SomeGuyEight/CaveGenerationSystem/assets/137923841/cba4712c-e731-4233-a9fd-7d7412301901)
 
 - Sub Menus
-    1. New
-    2. Load
-    3. Save As
-    4. Reset
-    5. Clear
-    6. Merge
-    7. Select Generator
-    8. Gizmo Toggles
+    - New
+    - Load
+    - Save As
+    - Reset
+    - Clear
+    - Merge
+    - Select Generator
+    - Gizmo Toggles
         - Cell Gizmo Toggles
 
 # New
