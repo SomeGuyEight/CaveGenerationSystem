@@ -33,5 +33,5 @@
       - [Polygon Starter Pack's - Asset Store Page](https://assetstore.unity.com/packages/essentials/tutorial-projects/polygon-starter-pack-low-poly-3d-art-by-synty-156819)
       - [Synty Studios' - Asset Store Page](https://assetstore.unity.com/publishers/5217)
   2. C# Wizard ( publisher - Pinwheel Studios )
-      - [C# Wizard - Asset Store Page](https://assetstore.unity.com/packages/tools/utilities/csharp-wizard-104887)
+      - [C# Wizard's - Asset Store Page](https://assetstore.unity.com/packages/tools/utilities/csharp-wizard-104887)
       - [Pinwheel Studios' - Asset Store Page](https://assetstore.unity.com/publishers/17305)
