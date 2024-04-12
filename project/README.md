@@ -17,14 +17,13 @@
     - TextMeshPro
 
 3. Download the required Paid assets
-
-  * Tessera Pro by Boris the Brave
-      - [Tessera Pro - Asset Store Page](https://assetstore.unity.com/packages/tools/level-design/tessera-pro-161077)
-      - [Boris the Brave's - Asset Store Page](https://assetstore.unity.com/publishers/44953)
-      - [Boris the Brave's website](https://www.boristhebrave.com)
-  * Odin Inspector & Serializer by Sirenix
-      - [Odin Inspector & Serializer - Asset Store Page](https://assetstore.unity.com/packages/tools/utilities/odin-inspector-and-serializer-89041)
-      - [Sirenix's - Asset Store Page](https://assetstore.unity.com/publishers/3727)
+   _* Tessera Pro by Boris the Brave
+      _- [Tessera Pro - Asset Store Page](https://assetstore.unity.com/packages/tools/level-design/tessera-pro-161077)
+      _- [Boris the Brave's - Asset Store Page](https://assetstore.unity.com/publishers/44953)
+      _- [Boris the Brave's website](https://www.boristhebrave.com)
+   _* Odin Inspector & Serializer by Sirenix
+      _- [Odin Inspector & Serializer - Asset Store Page](https://assetstore.unity.com/packages/tools/utilities/odin-inspector-and-serializer-89041)
+      _- [Sirenix's - Asset Store Page](https://assetstore.unity.com/publishers/3727)
 
 4. Download & import the [SGProjectFiles.0.1.0](project/unity-packages/SGProjectFiles.0.1.0.unitypackage) Unity package
 
@@ -35,11 +34,11 @@
 
 6. Update the scripts inside Assets/_/Scripts
    
-  * Either uncomment out the lines outlined in [TesseraModifications](project/scripts/TesseraModifications.cs)
+  - Either uncomment out the lines outlined in [TesseraModifications](project/scripts/TesseraModifications.cs)
 
     or
 
-  * Download & import the [SGScripts_ModifiedSGScriptsAfterTesseraModifications.0.1.0](project/unity-packages/SGScripts_ModifiedSGScriptsAfterTesseraModifications.0.1.0.unitypackage) Unity package & let it override the scripts in Assets/_/Scripts
+  - Download & import the [SGScripts_ModifiedSGScriptsAfterTesseraModifications.0.1.0](project/unity-packages/SGScripts_ModifiedSGScriptsAfterTesseraModifications.0.1.0.unitypackage) Unity package & let it override the scripts in Assets/_/Scripts
    - [GenerationManager](project/scripts/GenerationSystem/GenerationManager.cs)
    - [project/scripts/GenerationSystem/InstanceGenerator.cs](InstanceGenerator)
    - [FullGenerationStats](project/scripts/Statistics/FullGenerationStats.cs)
