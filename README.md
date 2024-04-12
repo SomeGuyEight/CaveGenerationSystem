@@ -21,9 +21,10 @@ Paid Assets ( required )
   2. Odin Inspector & Serializer ( publisher - Sirenix )
       > https://assetstore.unity.com/packages/tools/utilities/odin-inspector-and-serializer-89041
       > https://assetstore.unity.com/publishers/3727
+
 Free Assets ( assets already in zipped project files )
   1. Polygon Starter Pack ( publisher - Synty Studios )
-      > Just the shader & material used for the global grid meshes
+      - Just the shader & material used for the global grid meshes
       > https://assetstore.unity.com/packages/essentials/tutorial-projects/polygon-starter-pack-low-poly-3d-art-by-synty-156819
       > https://assetstore.unity.com/publishers/5217
   2. C# Wizard ( publisher - Pinwheel Studios )
