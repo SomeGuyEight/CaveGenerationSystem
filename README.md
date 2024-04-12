@@ -19,8 +19,8 @@
 3. TextMeshPro
 
 ## Paid Assets ( required )
-  1. Tessera ( publisher - Borris the Brave )
-      - [Tessera - Asset Store Page](https://assetstore.unity.com/packages/tools/level-design/tessera-procedural-tile-based-generator-155425)
+  1. Tessera Pro ( publisher - Borris the Brave )
+      - [Tessera Pro - Asset Store Page](https://assetstore.unity.com/packages/tools/level-design/tessera-pro-161077)
       - [Boris the Brave's - Asset Store Page](https://assetstore.unity.com/publishers/44953)
   2. Odin Inspector & Serializer ( publisher - Sirenix )
       - [Odin Inspector & Serializer - Asset Store Page](https://assetstore.unity.com/packages/tools/utilities/odin-inspector-and-serializer-89041)
