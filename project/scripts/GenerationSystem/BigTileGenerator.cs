@@ -35,7 +35,7 @@ namespace SlimeGame
         {
             var cellInstances = options.CellInstances;
             var cellSize = options.CellSize;
-            var halfCell = Vector3.Scale(cellSize,new Vector3(.5f,.5f,.5f));
+            var offset = Vector3.Scale(cellSize,new Vector3(-.5f,-.5f,-.5f)); // - half cell
             Dictionary <Vector3Int,TesseraTileInstance> cellsToTesseraTileInstances = new ();
             for (int i = 0;i < cellInstances.Length;i++)
             {
@@ -45,7 +45,7 @@ namespace SlimeGame
                 deepCopyOfInstance.AlignCellsAndPosition(newCell,cellSize);
                 /// to align the center of local cell (0,0,0) with (0,0,0) 
                 /// -> this matches how the TesseraTileBase stores offsets and makes working with them easier
-                deepCopyOfInstance.Position -= halfCell;
+                deepCopyOfInstance.OffsetPosition(offset);
                 cellsToTesseraTileInstances.TryAdd(deepCopyOfInstance.Cell,deepCopyOfInstance);
             }
             options.CellToTesseraTileInstances = cellsToTesseraTileInstances;
