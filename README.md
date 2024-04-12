@@ -1,6 +1,6 @@
 # TODO:
 1. Finish the Read me...
-2. Overviews of project
+2. Overview of project
 3. What are 'Generation Instances'
 4. Steps to setup the project in unity
 5. 'Roadmap'/Other features I am working on
