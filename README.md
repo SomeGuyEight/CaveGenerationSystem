@@ -19,9 +19,12 @@
 3. TextMeshPro
 
 ## Paid Assets ( required )
-  1. Tessera Pro by Borris the Brave
+  1. Tessera Pro by Boris the Brave
       - [Tessera Pro - Asset Store Page](https://assetstore.unity.com/packages/tools/level-design/tessera-pro-161077)
       - [Boris the Brave's - Asset Store Page](https://assetstore.unity.com/publishers/44953)
+      - Used in Tessera [DeBroglie by Boris the Brave](boristhebrave.github.io/DeBroglie/)
+      - Used in Tessera [Sylves by Boris the Brave](https://github.com/BorisTheBrave/sylves)
+      - [Boris the Brave's website](https://www.boristhebrave.com)
   2. Odin Inspector & Serializer by Sirenix
       - [Odin Inspector & Serializer - Asset Store Page](https://assetstore.unity.com/packages/tools/utilities/odin-inspector-and-serializer-89041)
       - [Sirenix's - Asset Store Page](https://assetstore.unity.com/publishers/3727)
