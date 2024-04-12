@@ -12,8 +12,8 @@
 - [See the setup steps in the project file](https://github.com/SomeGuyEight/CaveGenerationSystem/tree/main/project#getting-the-project-set-up)
 
 # Using the project 
-- [Runtime Controls](project/controls)
-- [Runtime Menus](project/menus)
+- [Runtime Controls](project/instructions/controls-README.md)
+- [Runtime Menus](project/instructions/menus-README.md)
 
 # Assets used in the project
 
