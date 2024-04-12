@@ -24,7 +24,7 @@
 ## Paid Assets ( required )
   1. Tessera Pro by Boris the Brave
       - [Tessera Pro - Asset Store Page](https://assetstore.unity.com/packages/tools/level-design/tessera-pro-161077)
-         - Projects Tessera uses by Borris the Brave
+         - Free projects used by Tessera & published by Borris the Brave
             - [DeBroglie](boristhebrave.github.io/DeBroglie/)
             - [Sylves](https://github.com/BorisTheBrave/sylves)
       - [Boris the Brave's - Asset Store Page](https://assetstore.unity.com/publishers/44953)
