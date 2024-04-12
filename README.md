@@ -10,7 +10,7 @@ TODO:
 
 
 
-> Assets used in the project
+* Assets used in the project
 
 Unity Assets
 1. Cinemachine
