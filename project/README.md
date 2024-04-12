@@ -33,11 +33,13 @@
 
 5. Make the three changes inside Tessera outlined in [TesseraModifications](project/scripts/TesseraModifications.cs)
 
-6. Either uncomment out the lines outlined in [TesseraModifications](project/scripts/TesseraModifications.cs)
+6. Update the scripts inside Assets/_/Scripts
+   
+  * Either uncomment out the lines outlined in [TesseraModifications](project/scripts/TesseraModifications.cs)
 
-or 
+    or
 
-6. Download & import the [SGScripts_ModifiedSGScriptsAfterTesseraModifications.0.1.0](project/unity-packages/SGScripts_ModifiedSGScriptsAfterTesseraModifications.0.1.0.unitypackage) Unity package & let it override the scripts in Assets/_/Scripts
+  * Download & import the [SGScripts_ModifiedSGScriptsAfterTesseraModifications.0.1.0](project/unity-packages/SGScripts_ModifiedSGScriptsAfterTesseraModifications.0.1.0.unitypackage) Unity package & let it override the scripts in Assets/_/Scripts
    - [GenerationManager](project/scripts/GenerationSystem/GenerationManager.cs)
    - [project/scripts/GenerationSystem/InstanceGenerator.cs](InstanceGenerator)
    - [FullGenerationStats](project/scripts/Statistics/FullGenerationStats.cs)
