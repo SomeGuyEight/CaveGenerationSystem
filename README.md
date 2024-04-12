@@ -1,4 +1,4 @@
-TODO:
+# TODO:
 1. Overviews of project
 2. Instances
 3. Steps to setup the project in unity
@@ -10,14 +10,14 @@ TODO:
 
 
 
-* Assets used in the project
+# Assets used in the project
 
-Unity Assets
+## Unity Assets
 1. Cinemachine
 2. Probuilder
 3. TextMeshPro
 
-Paid Assets ( required )
+## Paid Assets ( required )
   1. Tessera ( publisher - Borris the Brave )
       > https://assetstore.unity.com/packages/tools/level-design/tessera-procedural-tile-based-generator-155425
       > https://assetstore.unity.com/publishers/44953
@@ -26,7 +26,7 @@ Paid Assets ( required )
       > https://assetstore.unity.com/publishers/3727
 
 
-Free Assets ( assets already in zipped project files )
+## Free Assets ( assets already in zipped project files )
   1. Polygon Starter Pack ( publisher - Synty Studios )
       - Just the shader & material used for the global grid meshes
       > https://assetstore.unity.com/packages/essentials/tutorial-projects/polygon-starter-pack-low-poly-3d-art-by-synty-156819
