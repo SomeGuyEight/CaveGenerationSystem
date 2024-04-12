@@ -3,9 +3,9 @@ TODO:
 2. Instances
 3. Steps to setup the project in unity
 4. 'Roadmap'/Other features I am working on
-   a. Functioning, but not on github yet
-   b. Started, but not implemented, integrated, or functioning
-   c. Not started, but would like to implement
+   - Functioning, but not on github yet
+   - Started, but not implemented, integrated, or functioning
+   - Not started, but would like to implement
     
 
 
