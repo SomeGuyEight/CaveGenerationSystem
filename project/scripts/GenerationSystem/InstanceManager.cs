@@ -427,34 +427,27 @@ namespace SlimeGame
             var newUnselected = _unselectedGizmosEnabled;
             if (isSelected) 
             {
-                var hasFlags = _selectedGizmosEnabled.HasFlags(gizmosToToggle);
-                newSelected |= hasFlags ? newSelected.UnsetFlags(gizmosToToggle) : newSelected.SetFlags(gizmosToToggle);
+                newSelected = newSelected.HasFlags(gizmosToToggle) ? newSelected.UnsetFlags(gizmosToToggle) : newSelected.SetFlags(gizmosToToggle);
             } 
             else 
             {
-                var hasFlags = _unselectedGizmosEnabled.HasFlags(gizmosToToggle);
-                newUnselected |= hasFlags ? newUnselected.UnsetFlags(gizmosToToggle) : newUnselected.SetFlags(gizmosToToggle);
+                newUnselected = newUnselected.HasFlags(gizmosToToggle) ? newUnselected.UnsetFlags(gizmosToToggle) : newUnselected.SetFlags(gizmosToToggle);
             }
 
-            var gizmosToUpdate = GizmoTypes.None;
-            if (newSelected != _selectedGizmosEnabled) 
+            if (newSelected != _selectedGizmosEnabled)
             {
-                gizmosToUpdate |= (_selectedGizmosEnabled & newSelected);
                 _selectedGizmosEnabled = newSelected;
             }
-            if (newUnselected != _unselectedGizmosEnabled)
+            else if (newUnselected != _unselectedGizmosEnabled)
             {
-                gizmosToUpdate |= (_unselectedGizmosEnabled & newUnselected);
                 _unselectedGizmosEnabled = newUnselected;
             }
 
-            if (gizmosToUpdate != GizmoTypes.None && _allInstances != null && _allInstances.Count > 0) 
+            foreach (var instance in _allInstances?.Where(x => x.GizmoTypes.HasFlags(gizmosToToggle)))
             {
-                foreach (var instance in _allInstances.Where(x => gizmosToUpdate.HasFlags(x.GizmoTypes)))
-                {
-                    instance.UpdateGizmoEnabled();
-                }
+                instance.UpdateGizmoEnabled();
             }
+
         }
 
         public bool IsColliderEnabled(ColliderTypes enabledColliders,bool isSelected)
