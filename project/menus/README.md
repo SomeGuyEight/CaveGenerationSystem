@@ -14,7 +14,7 @@
 - Merge
 - Select Generator
 - Gizmo Toggles
-      - Cell Gizmo Toggles
+    - Cell Gizmo Toggles
 
 # New
 ![new menu](https://github.com/SomeGuyEight/CaveGenerationSystem/assets/137923841/59df4d36-d71c-41df-9824-c30f1e35694e)
