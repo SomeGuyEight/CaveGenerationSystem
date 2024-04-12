@@ -2,14 +2,14 @@
 1. Finish the Read me...
 2. Overview of project
 3. What are 'Generation Instances'
-4. Steps to setup the project in unity
 5. 'Roadmap'/Other features I am working on
    - Functioning, but not on github yet
    - Started, but not implemented, integrated, or functioning
    - Not started, but would like to implement
     
 
-
+# Getting Started 
+- [See the setup steps in the project file](https://github.com/SomeGuyEight/CaveGenerationSystem/tree/main/project#getting-the-project-set-up)
 
 # Assets used in the project
 
