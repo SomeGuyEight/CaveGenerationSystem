@@ -9,8 +9,11 @@ TODO:
     
 
 
+
+> Assets used in the project
+
 Unity Assets
-Cinemachine
+1. Cinemachine
 2. Probuilder
 3. TextMeshPro
 
