@@ -30,8 +30,8 @@
 
 ## Free Assets ( assets are already in the [Unity Packages](https://github.com/SomeGuyEight/CaveGenerationSystem/tree/4c888d3da846606709f5c0a175df60ea86241f89/project/unity-packages) )
   1. Projects Tessera uses by Borris the Brave
-      - [DeBroglie by Boris the Brave](boristhebrave.github.io/DeBroglie/)
-      - [Sylves by Boris the Brave](https://github.com/BorisTheBrave/sylves)
+      - [DeBroglie](boristhebrave.github.io/DeBroglie/)
+      - [Sylves](https://github.com/BorisTheBrave/sylves)
   2. Polygon Starter Pack by Synty Studios
       - Just the shader & material used for the global grid meshes
       - [Polygon Starter Pack's - Asset Store Page](https://assetstore.unity.com/packages/essentials/tutorial-projects/polygon-starter-pack-low-poly-3d-art-by-synty-156819)
