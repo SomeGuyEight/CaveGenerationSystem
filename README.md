@@ -24,6 +24,9 @@
 ## Paid Assets ( required )
   1. Tessera Pro by Boris the Brave
       - [Tessera Pro - Asset Store Page](https://assetstore.unity.com/packages/tools/level-design/tessera-pro-161077)
+         - Projects Tessera uses by Borris the Brave
+            - [DeBroglie](boristhebrave.github.io/DeBroglie/)
+            - [Sylves](https://github.com/BorisTheBrave/sylves)
       - [Boris the Brave's - Asset Store Page](https://assetstore.unity.com/publishers/44953)
       - [Boris the Brave's website](https://www.boristhebrave.com)
   2. Odin Inspector & Serializer by Sirenix
@@ -32,10 +35,7 @@
 
 
 ## Free Assets ( assets are already in the [Unity Packages](https://github.com/SomeGuyEight/CaveGenerationSystem/tree/4c888d3da846606709f5c0a175df60ea86241f89/project/unity-packages) )
-  1. Projects Tessera uses by Borris the Brave
-      - [DeBroglie](boristhebrave.github.io/DeBroglie/)
-      - [Sylves](https://github.com/BorisTheBrave/sylves)
-  2. Polygon Starter Pack by Synty Studios
+  1. Polygon Starter Pack by Synty Studios
       - Just the shader & material used for the global grid meshes
       - [Polygon Starter Pack's - Asset Store Page](https://assetstore.unity.com/packages/essentials/tutorial-projects/polygon-starter-pack-low-poly-3d-art-by-synty-156819)
       - [Synty Studios' - Asset Store Page](https://assetstore.unity.com/publishers/5217)
