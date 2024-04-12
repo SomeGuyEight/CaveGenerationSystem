@@ -17,13 +17,13 @@
     - TextMeshPro
 
 3. Download the required Paid assets
-   _* Tessera Pro by Boris the Brave
-      _- [Tessera Pro - Asset Store Page](https://assetstore.unity.com/packages/tools/level-design/tessera-pro-161077)
-      _- [Boris the Brave's - Asset Store Page](https://assetstore.unity.com/publishers/44953)
-      _- [Boris the Brave's website](https://www.boristhebrave.com)
-   _* Odin Inspector & Serializer by Sirenix
-      _- [Odin Inspector & Serializer - Asset Store Page](https://assetstore.unity.com/packages/tools/utilities/odin-inspector-and-serializer-89041)
-      _- [Sirenix's - Asset Store Page](https://assetstore.unity.com/publishers/3727)
+   _ Tessera Pro by Boris the Brave
+      _ [Tessera Pro - Asset Store Page](https://assetstore.unity.com/packages/tools/level-design/tessera-pro-161077)
+      _ [Boris the Brave's - Asset Store Page](https://assetstore.unity.com/publishers/44953)
+      _ [Boris the Brave's website](https://www.boristhebrave.com)
+   _ Odin Inspector & Serializer by Sirenix
+      _ [Odin Inspector & Serializer - Asset Store Page](https://assetstore.unity.com/packages/tools/utilities/odin-inspector-and-serializer-89041)
+      _ [Sirenix's - Asset Store Page](https://assetstore.unity.com/publishers/3727)
 
 4. Download & import the [SGProjectFiles.0.1.0](project/unity-packages/SGProjectFiles.0.1.0.unitypackage) Unity package
 
