@@ -483,7 +483,7 @@ namespace SlimeGame
 #pragma warning restore
         private TesseraPalette CreateNewPallete()
         {
-            var newPalette = TesseraUtils.GetNewTilePalette(DefaultPaletteEntries);
+            var newPalette = DefaultPaletteEntries.GetNewTilePalette();
             newPalette.matchOverrides = DefaultMatchOverrides;
             newPalette.OnBeforeSerialize();
             AssetDatabase.CreateAsset(newPalette,_subFolderPaths[SubFolderType.DefaultPalettes] + $"/new {_newDatabaseName}.asset");
