@@ -27,7 +27,7 @@
       - [Sirenix's - Asset Store Page](https://assetstore.unity.com/publishers/3727)
 
 
-## Free Assets ( assets already in zipped project files )
+## Free Assets ( assets are already in the [Unity Packages](https://github.com/SomeGuyEight/CaveGenerationSystem/tree/4c888d3da846606709f5c0a175df60ea86241f89/project/unity-packages) )
   1. Polygon Starter Pack ( publisher - Synty Studios )
       - Just the shader & material used for the global grid meshes
       - [Polygon Starter Pack's - Asset Store Page](https://assetstore.unity.com/packages/essentials/tutorial-projects/polygon-starter-pack-low-poly-3d-art-by-synty-156819)
