@@ -5,6 +5,9 @@
 # Runtime HUD & UI
 
 # Hotbar
+![hot bar](https://github.com/SomeGuyEight/CaveGenerationSystem/assets/137923841/a7cc0839-d4aa-4aca-89ec-04f9ffca3923)
+- At runtime press number 1 - 6 to select a mode.
+- Then press current selected mode number again to cycle through it's sub modes.
 
 ## Edit Modes
 
