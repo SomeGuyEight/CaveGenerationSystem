@@ -1,12 +1,11 @@
 using UnityEngine;
-using System.Linq;
 using System.Collections.Generic;
 using Sylves;
 using Tessera;
 
 namespace SlimeGame
 {
-    public static class TesseraUtils
+    public static class SlimeGameToTesseraUtils
     {
         private class RelativeCorners
         {
@@ -32,70 +31,6 @@ namespace SlimeGame
             { Directions.Back  , new (Corners.LUB,Corners.RUB,Corners.LDB,Corners.RDB) },
         };
         private static readonly Directions[] _allFaceDirs = DirectionsHelper.AllFaceDirections;
-        private static readonly CellDir[] _allCellDir = _allFaceDirs.Select(x => x.ToCellDir()).ToArray();
-
-
-        /// <summary>
-        /// Returns a <see cref="CubeBound"/> that contains all the <see cref="TesseraTileInstance"/>'s <see cref="TesseraTileInstance.Cell"/> &amp; <see cref="TesseraTileInstance.Cells"/>
-        /// <br/> ( ! ) Does NOT change any <see cref="TesseraTileInstance"/> values
-        /// </summary>
-        public static CubeBound GetCellBound(this TesseraTileInstance tesseraTileInstance)
-        {
-            var min = tesseraTileInstance.Cell;
-            var maxCell = tesseraTileInstance.Cell;
-            for (int i = 0;i < tesseraTileInstance.Cells.Length;i++)
-            {
-                min = Vector3Int.Min(min,tesseraTileInstance.Cells[i]);
-                maxCell = Vector3Int.Max(maxCell,tesseraTileInstance.Cells[i]);
-            }
-            return new CubeBound(min,maxCell + Vector3Int.one);
-        }
-
-        /// <summary>
-        /// Aligns the <see cref="TesseraTileInstance"/>'s  Cell &amp; Cells values to a new Cell
-        /// <br/><br/> ( ! ) DOES affect Postition, Cell &amp; Cells values
-        /// <br/> ( ! ) Does NOT affect Rotation or Scale values
-        /// <br/><br/> -> This method still maintains the <see cref="TesseraTileInstance"/>'s alignment to it's Grid &amp; Changes the Cell &amp; Cells Values
-        /// </summary>
-        public static void AlignCellsAndPosition(this TesseraTileInstance tesseraTileInstance,Vector3Int newCell,Vector3 cellSize)
-        {
-            tesseraTileInstance.AlignCells(newCell);
-            tesseraTileInstance.AlignPosition(newCell,cellSize);
-        }
-
-        /// <summary>
-        /// Aligns the <see cref="TesseraTileInstance"/>'s  Cell &amp; Cells values to a new Cell
-        /// <br/><br/> ( ! ) DOES affect Cell &amp; Cells values
-        /// <br/> ( ! ) Does NOT affect Postition, Rotation, or Scale 
-        /// </summary>
-        public static void AlignCells(this TesseraTileInstance tesseraTileInstance,Vector3Int newCell)
-        {
-            var cellOffset = newCell - tesseraTileInstance.Cell;
-            if (cellOffset == Vector3Int.zero)
-            {
-                return;
-            }
-
-            tesseraTileInstance.Cell = newCell;
-            for (int i = 0;i < tesseraTileInstance.Cells.Length;i++)
-            {
-                tesseraTileInstance.Cells[i] = tesseraTileInstance.Cells[i] + cellOffset;
-            }
-        }
-
-        /// <summary>
-        /// Aligns <see cref="TesseraTileInstance"/>'s <see cref="TRS"/> to a new Position
-        /// <br/><br/> ( ! ) DOES affect Position values
-        /// <br/> ( ! ) Does NOT affect Cell, Cells, Rotation, or Scale values
-        /// <br/><br/> -> This method still maintains the <see cref="TesseraTileInstance"/>'s alignment to it's Grid, but does not affect the Cell &amp; Cells values
-        /// </summary>
-        public static void AlignPosition(this TesseraTileInstance tesseraTileInstance,Vector3Int newCell,Vector3 cellSize)
-        {
-            var newPosition = Vector3.Scale(newCell + new Vector3(.5f,.5f,.5f),cellSize);
-            tesseraTileInstance.LocalPosition += newPosition - tesseraTileInstance.Position;
-            tesseraTileInstance.Position = newPosition;
-        }
-
 
         public static SylvesOrientedFace DeepClone(this SylvesOrientedFace orientedFace,Vector3Int? offset = null)
         {
@@ -163,7 +98,6 @@ namespace SlimeGame
             }
         }
 
-
         public static FaceDetails GetSquareFaceDetails(this Corners cornersMask,Directions faceDirs,int airPaint,int voidPaint)
         {
             var relativeCorners = _relativeCorners[faceDirs];
@@ -205,29 +139,5 @@ namespace SlimeGame
             };
         }
 
-
-        public static TesseraPalette GetNewTilePalette(List<PaletteEntry> entries)
-        {
-            var newPalette = ScriptableObject.CreateInstance<TesseraPalette>();
-            newPalette.entries = entries.DeepClone();
-            return newPalette;
-        }
-        private static List<PaletteEntry> DeepClone(this List<PaletteEntry> entries)
-        {
-            List<PaletteEntry> clone = new (entries.Count);
-            for (var i = 0;i < entries.Count;i++)
-            {
-                clone.Add(entries[i].DeepClone());
-            }
-            return clone;
-        }
-        private static PaletteEntry DeepClone(this PaletteEntry entry)
-        {
-            return new () 
-            { 
-                color = entry.color, 
-                name = entry.name 
-            };
-        }
     }
 }
