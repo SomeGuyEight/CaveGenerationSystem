@@ -1,0 +1,20 @@
+{
+    "name": "SlimeGame",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:4307f53044263cf4b835bd812fc161a4",
+        "GUID:63ee6a1dac0909741b7dbc92bb769281"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
