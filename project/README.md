@@ -28,7 +28,7 @@
 5. Make the three changes inside Tessera outlined in [TesseraModifications](project/scripts/TesseraModifications.cs)
 
 6. Update the scripts inside Assets/_/Scripts
-    - Either uncomment out the lines outlined in [TesseraModifications](project/scripts/TesseraModifications.cs)
+    - Uncomment out the lines outlined in [TesseraModifications](project/scripts/TesseraModifications.cs)
 
     or
 
