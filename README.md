@@ -1,12 +1,3 @@
-### TODO:
-1. Finish the Read me...
-2. Overview of project
-3. What are 'Generation Instances'
-5. 'Roadmap'/Other features I am working on
-   - Functioning, but not on github yet
-   - Started, but not implemented, integrated, or functioning
-   - Not started, but would like to implement
-    
 
 # Getting Started 
 - See the [set-up-README](project/getting-started/set-up-README.md) for the steps to set up a project
@@ -51,3 +42,16 @@
       - [Technie Collider Creator 2 Asset Store Page](https://assetstore.unity.com/packages/tools/physics/technie-collider-creator-2-217070)
       - [Triangular Pixels' Asset Store Page](https://assetstore.unity.com/publishers/19916)
       - The asset was used to generate the meshes referenced by all the prototype objects in the project. This asset has been removed for more accessability, but I would definetely recommend the asset.
+    
+
+
+# TODO:
+1. Finish the Read me...
+2. Overview of project
+3. What are 'Generation Instances'
+5. 'Roadmap'/Other features I am working on
+   - Functioning, but not on github yet
+   - Started, but not implemented, integrated, or functioning
+   - Not started, but would like to implement
+    
+
